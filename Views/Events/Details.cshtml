@@ -1,0 +1,48 @@
+﻿@model Event
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<hr />
+<div class="card border-info mb-3" style="max-width: 40rem;">
+    <div class="card-header"> <h2 class="text-primary">Info</h2></div>
+    <div class="card-body">
+        <p class="card-text"><dd class="col-sm-10">
+                @Html.DisplayFor(model => model.EventName)
+        </dd></p>
+        <p class="card-text"><dd class="col-sm-10">
+                @Html.DisplayFor(model => model.TypeEvent)
+        </dd></p>               
+        <p class="card-text"><dd class="col-sm-20" style="text-align: justify;">
+                @Html.DisplayFor(model => model.Description)
+        </dd></p>
+        <p class="card-text"><dd class="col-sm-10">
+                @Html.DisplayFor(model => model.Organizer)
+        </dd></p>
+        <p class="card-text"><dd class="col-sm-10">
+                @Html.DisplayFor(model => model.Address)
+        </dd></p>
+        <p class="card-text"><dd class="col-sm-10">
+                @Html.DisplayFor(model => model.Date)
+        </dd></p>
+        <p class="card-text"><dd class="col-sm-10">
+                @Html.DisplayFor(model => model.Starts)
+        </dd></p>
+        <p class="card-text"><dd class="col-sm-10">
+                @Html.DisplayFor(model => model.Ends)
+        </dd></p>
+        <p class="card-text"><dd class="col-sm-10">
+                @Html.DisplayFor(model => model.Price)
+        </dd></p>
+    </div>
+</div>
+<a class="btn btn-primary" asp-controller="Events" asp-action="Index"><i class="fa-regular fa-circle-left" style="margin-right: 5px;"></i>Back</a>
+<a class="btn btn-info" href="@Model.EventLink" target="_blank"><i class="fa-brands fa-square-facebook fa-xl" style="margin-right: 5px;"></i>Go to Event</a>
+<hr />
+
+@if (User.Identity.IsAuthenticated)
+{
+    <a class="btn btn-secondary" asp-controller="Events" asp-action="Edit" asp-route-id="@Model?.Id"><i class="fa-solid fa-pen-to-square" style="margin-right: 5px;"></i>Edit</a>
+}
+<span class="text-danger"><strong>WAIT!</strong> Remember to Check Info in <strong>Facebook</strong> Event</span>

@@ -1,0 +1,111 @@
+﻿@using System.Security.Claims;
+@model Event
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-6 offset-md-3">
+            <div class="border p-3">
+                <div class="row pb-2">
+                    <h2 class="text-primary">Create an Event</h2>
+                    <hr />
+                </div>
+                <form method="post">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <div class="form-group">
+                        <label asp-for="EventName" class="control-label">Event Name</label>
+                        <input asp-for="EventName" class="form-control" />
+                        <span asp-validation-for="EventName" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="TypeEvent" class="control-label">Type of Event</label>
+                        <select asp-for="TypeEvent" class="form-control">
+                            <option value="Class">Class</option>
+                            <option value="Course">Course</option>
+                            <option value="Practice">Practice</option>
+                            <option value="Milonga">Milonga</option>
+                            <option value="Concert">Concert</option>
+                        </select>
+                        <span asp-validation-for="TypeEvent" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Description" class="control-label">Description</label>
+                        <input asp-for="Description" class="form-control" />
+                        <span asp-validation-for="Description" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Organizer" class="control-label">Organizer</label>
+                        <input asp-for="Organizer" class="form-control" />
+                        <span asp-validation-for="Organizer" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Address" class="control-label">Address</label>
+                        <input asp-for="Address" class="form-control" />
+                        <span asp-validation-for="Address" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Date" class="control-label">Date</label>
+                        <input asp-for="Date" type="text" class="form-control datepicker" id="Date" autocomplete="off" placeholder="dd-MM-yyyy" />
+                        <span asp-validation-for="Date" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group" id="endsDateGroup" style="display: none;">
+                        <label asp-for="EndsDate">Course Finish Date</label>
+                        <input asp-for="EndsDate" type="text" class="form-control datepicker" id="EndsDate" autocomplete="off" placeholder="dd-MM-yyyy" />
+                        <span asp-validation-for="EndsDate" class="text-danger"></span>
+                    </div>
+                    <input type="hidden" asp-for="CreatedBy" value="@User.FindFirstValue(ClaimTypes.NameIdentifier)" />
+
+                    <div class="form-group">
+                        <label asp-for="Starts">Starts</label>
+                        <input asp-for="Starts" class="form-control timepicker" placeholder="HH:mm" />
+                        <span asp-validation-for="Starts" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="Ends">Ends</label>
+                        <input asp-for="Ends" class="form-control timepicker" placeholder="HH:mm" />
+                        <span asp-validation-for="Ends" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="Price" class="control-label">Price</label>
+                        <input asp-for="Price" class="form-control" />
+                        <span asp-validation-for="Price" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="EventLink" class="control-label">Event Link</label>
+                        <input asp-for="EventLink" class="form-control" />
+                        <span asp-validation-for="EventLink" class="text-danger"></span>
+                    </div>
+                    <input type="hidden" asp-for="CreatedBy" value="@User.FindFirstValue(ClaimTypes.NameIdentifier)" />
+
+                    <br />
+                    <a class="btn btn-secondary" asp-controller="Events" asp-action="Index"><i class="fa-regular fa-circle-left" style="margin-right: 5px;"></i>Back</a>
+                    <button type="submit" class="btn btn-primary">Create</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        <partial name="_ValidationScriptsPartial" />
+    }
+    <script>
+        $(document).ready(function () {
+            $('#TypeEvent').change(function () {
+                if ($(this).val() == 'Course') {
+                    $('#endsDateGroup').show();
+                } else {
+                    $('#endsDateGroup').hide();
+                }
+            });
+        });
+    </script>
+}

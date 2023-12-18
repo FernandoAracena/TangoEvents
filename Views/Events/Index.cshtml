@@ -1,0 +1,111 @@
+﻿@using System.Security.Claims;
+@{
+    var cultureInfo = System.Globalization.CultureInfo.CurrentCulture;
+}
+@model IEnumerable<Event>
+
+@{
+    ViewData["Title"] = "Tango Events";
+    ViewData["Description"] = "Welcome to TangoEvents - Your cultural agenda platform for managing and exploring milongas, concerts, practices, classes, and courses in Oslo, Norway.";
+}
+
+@{
+    Layout = "_Layout";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col">
+            <div class="text-center">
+                <h1 class="display-4">Agenda</h1>
+            </div>
+
+            @if (User.Identity.IsAuthenticated)
+            {
+                <div class="text-center my-3">
+                    <a class="btn btn-primary" asp-controller="Events" asp-action="Create">Create a New Class or Event</a>
+                </div>
+            }
+
+            <form asp-controller="Events" asp-action="Index" method="get">
+                <div class="text-center my-3">
+                    <input type="submit" name="eventType" value="Events" autocomplete="off" class="btn btn-outline-primary @if ((string)ViewData["EventType"] == "Events") {
+                    <text>active</text>
+ }" />
+                    <input type="submit" name="eventType" value="Classes" autocomplete="off" class="btn btn-outline-info @if ((string)ViewData["EventType"] == "Classes") {
+                    <text>active</text>
+ }" />
+                </div>
+                <hr />
+
+                @if ((string)ViewData["EventType"] == "Classes")
+                {
+                    <div class="text-center my-3">
+                        <input type="hidden" name="eventType" value="@ViewData["EventType"]" />
+                        <input type="submit" name="subEventType" value="Class" autocomplete="off" class="btn btn-outline-info @if ((string)ViewData["subEventType"] == "Class") {
+                    <text>active</text>
+ }" />
+                        <input type="hidden" name="eventType" value="@ViewData["EventType"]" />
+                        <input type="submit" name="subEventType" value="Course" autocomplete="off" class="btn btn-outline-primary @if ((string)ViewData["subEventType"] == "Course") {
+                    <text>active</text>
+ }" />
+                    </div>
+                }
+            </form>
+        </div>
+
+                <table class="table" summary="List of Events">
+                    <caption style="display: none;">List of Events</caption>
+                    <thead style="display: none;">
+                        <tr>
+                            <th scope="col">Event Name</th>
+                            <th scope="col">Event Type</th>
+                            <th scope="col">Start Time</th>
+                            <th scope="col">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                            @foreach (var eventDate in (List<string>)ViewData["EventDates"])
+                            {
+                            <tr>
+                                <td colspan="4" class="text-left">
+                                    <h4 style="color: goldenrod">@cultureInfo.TextInfo.ToTitleCase(DateTime.ParseExact(eventDate, "dd-MM-yyyy", null).ToString("dddd"))</h4>
+                                    <h6 style="color: darkgoldenrod">
+                                            @DateTime.ParseExact(eventDate, "dd-MM-yyyy", null).ToString("MMMM").ToUpper()
+                                            @DateTime.ParseExact(eventDate, "dd-MM-yyyy", null).ToString("dd")
+                                    </h6>
+                                </td>
+                            </tr>
+
+                                @foreach (var item in Model.Where(e => e.Date == eventDate))
+                                {
+                                <tr data-event-type="@item.TypeEvent">
+                                    <td>
+                                            @Html.DisplayFor(modelItem => item.EventName)
+                                    </td>
+                                    <td>
+                                            @Html.DisplayFor(modelItem => item.TypeEvent)
+                                    </td>
+                                    <td>
+                                            @Html.DisplayFor(modelItem => item.Starts)
+                                    </td>
+                                    <td>
+                                        <a asp-controller="Events" asp-action="Details" asp-route-id="@item.Id" class="btn btn-info" aria-label="View Details"><i class="fa-solid fa-plus"></i></a>
+                                            @if (User.Identity.IsAuthenticated)
+                                            {
+                                                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                                                if (User.IsInRole("Admin") || item.CreatedBy == userId)
+                                                {
+                                                <a asp-controller="Events" asp-action="Edit" asp-route-id="@item.Id" class="btn btn-primary" aria-label="Edit Event"><i class="fa-solid fa-pen-to-square"></i></a>
+                                                <a asp-controller="Events" asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger" aria-label="Delete Event"><i class="fa-regular fa-trash-can"></i></a>
+                                                }
+                                            }
+                                    </td>
+                                </tr>
+                                }
+                            }
+                    </tbody>
+                </table>
+    </div>
+</div>
+

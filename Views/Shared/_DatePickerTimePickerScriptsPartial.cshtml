@@ -1,0 +1,22 @@
+﻿<script>
+    $(function () {
+        // Datepicker initialization
+        $(".datepicker").datepicker({
+            dateFormat: "dd-mm-yy", // Set the desired date format
+            changeYear: true, // Enable year dropdown
+            yearRange: "c-100:c+10" // Set the range of years
+        });
+
+        // Timepicker initialization
+        $("input.timepicker").timepicker({
+            timeFormat: "HH:mm", // Set the desired time format
+            stepHour: 1,
+            stepMinute: 30,
+            hourMin: 0,
+            hourMax: 23,
+            minuteMin: 0,
+            minuteMax: 59,
+            scrollbar: true
+        });
+    });
+</script>

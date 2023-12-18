@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.33424.131
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TangoKultura", "TangoKultura.csproj", "{8956CADF-C33E-4C2C-971F-8B690BE4CBCF}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8956CADF-C33E-4C2C-971F-8B690BE4CBCF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8956CADF-C33E-4C2C-971F-8B690BE4CBCF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8956CADF-C33E-4C2C-971F-8B690BE4CBCF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8956CADF-C33E-4C2C-971F-8B690BE4CBCF}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {C9397249-F10F-4685-B9CB-31669605274E}
+	EndGlobalSection
+EndGlobal
