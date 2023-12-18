@@ -1,7 +1,8 @@
-﻿@using System.Security.Claims;
+﻿﻿@using System.Security.Claims;
 @{
     var cultureInfo = System.Globalization.CultureInfo.CurrentCulture;
 }
+
 @model IEnumerable<Event>
 
 @{
@@ -31,10 +32,10 @@
                 <div class="text-center my-3">
                     <input type="submit" name="eventType" value="Events" autocomplete="off" class="btn btn-outline-primary @if ((string)ViewData["EventType"] == "Events") {
                     <text>active</text>
- }" />
+                    }" />
                     <input type="submit" name="eventType" value="Classes" autocomplete="off" class="btn btn-outline-info @if ((string)ViewData["EventType"] == "Classes") {
                     <text>active</text>
- }" />
+                    }" />
                 </div>
                 <hr />
 
@@ -44,68 +45,91 @@
                         <input type="hidden" name="eventType" value="@ViewData["EventType"]" />
                         <input type="submit" name="subEventType" value="Class" autocomplete="off" class="btn btn-outline-info @if ((string)ViewData["subEventType"] == "Class") {
                     <text>active</text>
- }" />
+                    }" />
                         <input type="hidden" name="eventType" value="@ViewData["EventType"]" />
                         <input type="submit" name="subEventType" value="Course" autocomplete="off" class="btn btn-outline-primary @if ((string)ViewData["subEventType"] == "Course") {
                     <text>active</text>
- }" />
+                    }" />
                     </div>
+
+                    @if ((string)ViewData["subEventType"] == "Course")
+                    {
+                        <div class="text-center my-3">
+                            <input type="hidden" name="subEventType" value="Course" />
+                            <button type="submit" name="upcomingCourses" value="true" class="btn btn-outline-success @if (Convert.ToBoolean(ViewData["UpcomingCourses"])) {
+                    <text>active</text>
+                }">Upcoming Courses</button>
+                            <button type="submit" name="upcomingCourses" value="false" class="btn btn-outline-danger @if (!Convert.ToBoolean(ViewData["UpcomingCourses"])) {
+                    <text>active</text>
+                }">Started Courses</button>
+                        </div>
+                    }
                 }
             </form>
-        </div>
 
-                <table class="table" summary="List of Events">
-                    <caption style="display: none;">List of Events</caption>
-                    <thead style="display: none;">
-                        <tr>
-                            <th scope="col">Event Name</th>
-                            <th scope="col">Event Type</th>
-                            <th scope="col">Start Time</th>
-                            <th scope="col">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                            @foreach (var eventDate in (List<string>)ViewData["EventDates"])
-                            {
+            <table class="table" summary="List of Events">
+                <caption style="display: none;">List of Events</caption>
+                <thead style="display: none;">
+                    <tr>
+                        <th scope="col">Event Name</th>
+                        <th scope="col">Event Type</th>
+                        <th scope="col">Start Time</th>
+                        <th scope="col">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var eventDate in (List<string>)ViewData["EventDates"])
+                    {
+                        var eventsOnDate = Model.Where(e => e.Date == eventDate).ToList();
+                        if (eventsOnDate.Any())
+                        {
                             <tr>
                                 <td colspan="4" class="text-left">
                                     <h4 style="color: goldenrod">@cultureInfo.TextInfo.ToTitleCase(DateTime.ParseExact(eventDate, "dd-MM-yyyy", null).ToString("dddd"))</h4>
                                     <h6 style="color: darkgoldenrod">
-                                            @DateTime.ParseExact(eventDate, "dd-MM-yyyy", null).ToString("MMMM").ToUpper()
-                                            @DateTime.ParseExact(eventDate, "dd-MM-yyyy", null).ToString("dd")
+                                        @DateTime.ParseExact(eventDate, "dd-MM-yyyy", null).ToString("MMMM").ToUpper()
+                                        @DateTime.ParseExact(eventDate, "dd-MM-yyyy", null).ToString("dd")
                                     </h6>
                                 </td>
                             </tr>
 
-                                @foreach (var item in Model.Where(e => e.Date == eventDate))
-                                {
+                            @foreach (var item in eventsOnDate)
+                            {
                                 <tr data-event-type="@item.TypeEvent">
                                     <td>
-                                            @Html.DisplayFor(modelItem => item.EventName)
+                                        @Html.DisplayFor(modelItem => item.EventName)
                                     </td>
                                     <td>
-                                            @Html.DisplayFor(modelItem => item.TypeEvent)
+                                        @Html.DisplayFor(modelItem => item.TypeEvent)
+                                        @if (item.TypeEvent == "Course" && DateTime.ParseExact(item.Date, "dd-MM-yyyy", null) < DateTime.Now)
+                                        {
+                                            <div class="alert alert-dismissible alert-warning">
+                                                <h4 class="alert-heading">Already Started!</h4>
+                                                <p class="mb-0">Please contact the organizer and ask if you can Drop-In.</p>
+                                            </div>
+                                        }
                                     </td>
                                     <td>
-                                            @Html.DisplayFor(modelItem => item.Starts)
+                                        @Html.DisplayFor(modelItem => item.Starts)
                                     </td>
                                     <td>
                                         <a asp-controller="Events" asp-action="Details" asp-route-id="@item.Id" class="btn btn-info" aria-label="View Details"><i class="fa-solid fa-plus"></i></a>
-                                            @if (User.Identity.IsAuthenticated)
+                                        @if (User.Identity.IsAuthenticated)
+                                        {
+                                            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                                            if (User.IsInRole("Admin") || item.CreatedBy == userId)
                                             {
-                                                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-                                                if (User.IsInRole("Admin") || item.CreatedBy == userId)
-                                                {
                                                 <a asp-controller="Events" asp-action="Edit" asp-route-id="@item.Id" class="btn btn-primary" aria-label="Edit Event"><i class="fa-solid fa-pen-to-square"></i></a>
                                                 <a asp-controller="Events" asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger" aria-label="Delete Event"><i class="fa-regular fa-trash-can"></i></a>
-                                                }
                                             }
+                                        }
                                     </td>
                                 </tr>
-                                }
                             }
-                    </tbody>
-                </table>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
-

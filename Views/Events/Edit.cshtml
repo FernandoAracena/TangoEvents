@@ -1,4 +1,5 @@
-﻿@model TangoKultura.Models.Event
+﻿﻿@using System.Security.Claims;﻿﻿
+@model TangoKultura.Models.Event
 
 @{
     ViewData["Title"] = "Edit Event";
@@ -56,6 +57,12 @@
                 <input asp-for="Address" class="form-control" />
                 <span asp-validation-for="Address" class="text-danger"></span>
             </div>
+
+            @* <div class="form-group">
+                <label asp-for="City">City</label>
+                <input asp-for="City" class="form-control" />
+                <span asp-validation-for="City" class="text-danger"></span>
+            </div> *@
 
             <div class="form-group">
                 <label asp-for="Date" class="control-label">Date</label>
@@ -117,6 +124,3 @@
         });
     </script>
 }
-
-
-

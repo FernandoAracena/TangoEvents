@@ -25,13 +25,33 @@ namespace TangoKultura.Controllers
 
         // GET: Events
         [AllowAnonymous]
-        public IActionResult Index(string eventType = "", string subEventType = "")
+        public IActionResult Index(string eventType = "", string subEventType = "", bool upcomingCourses = true)
         {
+            if (string.IsNullOrEmpty(eventType))
+            {
+                eventType = "Events";
+            }
+
             IEnumerable<Event> objEventList = _context.Events
                 .ToList()
-                .Where(e => DateTime.ParseExact(e.Date, "dd-MM-yyyy", CultureInfo.InvariantCulture) >= DateTime.Today)
+                .Where(e => !string.IsNullOrEmpty(e.Date) && (DateTime.ParseExact(e.Date, "dd-MM-yyyy", CultureInfo.InvariantCulture) >= DateTime.Today || (!string.IsNullOrEmpty(e.EndsDate) && DateTime.ParseExact(e.EndsDate, "dd-MM-yyyy", CultureInfo.InvariantCulture) >= DateTime.Today)))
                 .OrderBy(e => DateTime.ParseExact(e.Date, "dd-MM-yyyy", CultureInfo.InvariantCulture))
                 .ThenBy(e => DateTime.Parse(e.Starts));
+
+            // Separate lists for upcoming and started courses
+            IEnumerable<Event> objUpcomingCoursesList = Enumerable.Empty<Event>();
+            IEnumerable<Event> objStartedCoursesList = Enumerable.Empty<Event>();
+
+            // Filter by city
+            //if (string.IsNullOrEmpty(city))
+            //{
+            //    city = "Oslo";
+            //}
+
+            //if (!string.IsNullOrEmpty(city))
+            //{
+            //    objEventList = objEventList.Where(e => e.City == city);
+            //}
 
             if (!string.IsNullOrEmpty(subEventType))
             {
@@ -41,14 +61,21 @@ namespace TangoKultura.Controllers
                 }
                 else if (subEventType == "Course")
                 {
-                    objEventList = objEventList.Where(e => e.TypeEvent == "Course");
+                    objUpcomingCoursesList = objEventList
+                        .Where(e => e.TypeEvent == "Course" &&
+                                    (DateTime.ParseExact(e.Date, "dd-MM-yyyy", CultureInfo.InvariantCulture) > DateTime.Today));
+
+                    objStartedCoursesList = objEventList
+                        .Where(e => e.TypeEvent == "Course" &&
+                                    (DateTime.ParseExact(e.Date, "dd-MM-yyyy", CultureInfo.InvariantCulture) <= DateTime.Today));
                 }
             }
             else if (!string.IsNullOrEmpty(eventType))
             {
                 if (eventType == "Classes")
                 {
-                    objEventList = objEventList.Where(e => e.TypeEvent == "Class" || e.TypeEvent == "Course");
+                    subEventType = "Class";
+                    objEventList = objEventList.Where(e => e.TypeEvent == "Class");
                 }
                 else if (eventType == "Events")
                 {
@@ -64,10 +91,20 @@ namespace TangoKultura.Controllers
             ViewData["EventDates"] = eventDates;
             ViewData["EventType"] = eventType;
             ViewData["subEventType"] = subEventType;
+            //ViewData["City"] = city;
+
+            // Pass both lists to the view
+            ViewBag.UpcomingCoursesList = objUpcomingCoursesList;
+            ViewBag.StartedCoursesList = objStartedCoursesList;
+
+            // Filter the courses based on the selected option (upcoming or started)
+            if (subEventType == "Course")
+            {
+                objEventList = upcomingCourses ? objUpcomingCoursesList : objStartedCoursesList;
+            }
 
             return View(objEventList);
         }
-
 
         // GET: Events/Create
         [Authorize]
