@@ -1,18 +1,127 @@
-html {
-  font-size: 14px;
-}
-
-@media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
-}
-
-html {
-  position: relative;
-  min-height: 100%;
+/* Reset some default styles */
+body, h1, h2, h3, p, ul, li, a {
+    margin: 0;
+    padding: 0;
+    border: 0;
 }
 
 body {
-  margin-bottom: 60px;
+    font-family: 'Public Sans', sans-serif;
+    line-height: 1.6;
+    font-size: 16px;
+    background-color: #e74c3c; /* Red background color for the body */
 }
+
+.container {
+    margin-top: 20px;
+}
+
+/* Navbar styles */
+.navbar {
+    background-color: #2c3e50; /* Dark blue background color */
+}
+
+.navbar-brand {
+    color: #ecf0f1; /* Light gray text color */
+    font-size: 1.5em; /* Smaller font size for the brand */
+    transition: color 0.3s;
+}
+
+    .navbar-brand:hover {
+        color: #3498db; /* Highlight color on hover */
+    }
+
+.navbar-toggler-icon {
+    border-color: #ecf0f1; /* Light gray color for the icon */
+}
+
+.navbar-nav .nav-link {
+    color: #ecf0f1; /* Light gray text color */
+    transition: color 0.3s;
+}
+
+    .navbar-nav .nav-link:hover {
+        color: #3498db; /* Highlight color on hover */
+    }
+
+/* Table styles */
+.table-container {
+    text-align: center; /* Center the table */
+}
+
+.table {
+    background-color: #fff; /* White background color for the table */
+    border: 1px solid #ecf0f1; /* Light gray border for the table */
+    margin: auto; /* Center the table */
+    box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.1); /* Light shadow for the table */
+    width: 80%; /* Make the table wider */
+}
+
+.table th, .table td {
+    border: 1px solid #ecf0f1; /* Light gray border for table cells */
+    padding: 10px; /* Add padding to cells */
+}
+
+/* Card styles */
+.card {
+    border: 1px solid #000; /* Card border */
+    box-shadow: 5px 5px 10px #000; /* Card shadow */
+}
+
+/* Button styles */
+.btn {
+    border: 1px solid #000; /* Button border */
+    box-shadow: 3px 3px 6px #000; /* Button shadow */
+}
+
+/* Heading styles */
+.display-4 {
+    font-size: 2em; /* Large font size for headings */
+    color: #3498db; /* Highlight color for headings */
+}
+
+/* Additional styles for specific elements */
+.alert-warning {
+    border: 1px solid #000; /* Warning alert border */
+    box-shadow: 3px 3px 6px #000; /* Warning alert shadow */
+    color: #000;
+}
+
+/* Styles for the "Details" page */
+.card.border-info.mb-3 {
+    margin: auto; /* Center the details card */
+    margin-top: 20px; /* Add some space at the top */
+}
+
+    .card.border-info.mb-3 .card-header {
+        background-color: #3498db; /* Header background color */
+        color: #fff; /* Header text color */
+    }
+
+    .card.border-info.mb-3 .btn {
+        margin-right: 5px; /* Add spacing between buttons */
+    }
+
+    .card.border-info.mb-3 .text-danger {
+        display: block; /* Ensure text appears as a block */
+        margin-top: 10px; /* Add some space at the top */
+    }
+.card border-info mb-3 event-details {
+    transition: all 0.3s ease; /* Add a transition effect for all properties with a duration of 0.3 seconds */
+}
+/* Media Query for mobile responsiveness */
+@media (max-width: 768px) {
+    .navbar-collapse {
+        background-color: #2c3e50; /* Dark blue background color for collapsed navbar */
+    }
+
+    .navbar-nav .nav-link {
+        color: #ecf0f1; /* Light gray text color */
+    }
+
+    .card-body .card-text p {
+        font-size: 10px; /* Adjust the font size as desired */
+    }
+}
+
+

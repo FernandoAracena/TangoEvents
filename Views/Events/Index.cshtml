@@ -1,4 +1,4 @@
-﻿﻿@using System.Security.Claims;
+﻿@using System.Security.Claims;
 @{
     var cultureInfo = System.Globalization.CultureInfo.CurrentCulture;
 }
@@ -18,7 +18,7 @@
     <div class="row">
         <div class="col">
             <div class="text-center">
-                <h1 class="display-4">Agenda</h1>
+                <h1 class="display-4">Kalender</h1>
             </div>
 
             @if (User.Identity.IsAuthenticated)
@@ -43,28 +43,21 @@
                 {
                     <div class="text-center my-3">
                         <input type="hidden" name="eventType" value="@ViewData["EventType"]" />
-                        <input type="submit" name="subEventType" value="Class" autocomplete="off" class="btn btn-outline-info @if ((string)ViewData["subEventType"] == "Class") {
-                    <text>active</text>
-                    }" />
+                        <input type="submit" name="subEventType" value="Class" autocomplete="off" class="btn btn-outline-info @(ViewData["subEventType"].ToString() == "Class" ? "active" : "")" />
                         <input type="hidden" name="eventType" value="@ViewData["EventType"]" />
-                        <input type="submit" name="subEventType" value="Course" autocomplete="off" class="btn btn-outline-primary @if ((string)ViewData["subEventType"] == "Course") {
-                    <text>active</text>
-                    }" />
+                        <input type="submit" name="subEventType" value="Course" autocomplete="off" class="btn btn-outline-primary @(ViewData["subEventType"].ToString() == "Course" ? "active" : "")" />
                     </div>
 
                     @if ((string)ViewData["subEventType"] == "Course")
                     {
                         <div class="text-center my-3">
                             <input type="hidden" name="subEventType" value="Course" />
-                            <button type="submit" name="upcomingCourses" value="true" class="btn btn-outline-success @if (Convert.ToBoolean(ViewData["UpcomingCourses"])) {
-                    <text>active</text>
-                }">Upcoming Courses</button>
-                            <button type="submit" name="upcomingCourses" value="false" class="btn btn-outline-danger @if (!Convert.ToBoolean(ViewData["UpcomingCourses"])) {
-                    <text>active</text>
-                }">Started Courses</button>
+                            <button type="submit" name="upcomingCourses" value="true" class="btn btn-outline-success @(Convert.ToBoolean(ViewData["UpcomingCourses"]) ? "active" : "")">Upcoming Courses</button>
+                            <button type="submit" name="upcomingCourses" value="false" class="btn btn-outline-danger @(Convert.ToBoolean(ViewData["UpcomingCourses"]) ? "" : "active")">Started Courses</button>
                         </div>
                     }
                 }
+
             </form>
 
             <table class="table" summary="List of Events">
@@ -95,9 +88,10 @@
 
                             @foreach (var item in eventsOnDate)
                             {
-                                <tr data-event-type="@item.TypeEvent">
+                                <tr class="table-row">
                                     <td>
-                                        @Html.DisplayFor(modelItem => item.EventName)
+                                            @Html.DisplayFor(modelItem => item.EventName)
+
                                     </td>
                                     <td>
                                         @Html.DisplayFor(modelItem => item.TypeEvent)
@@ -113,17 +107,57 @@
                                         @Html.DisplayFor(modelItem => item.Starts)
                                     </td>
                                     <td>
-                                        <a asp-controller="Events" asp-action="Details" asp-route-id="@item.Id" class="btn btn-info" aria-label="View Details"><i class="fa-solid fa-plus"></i></a>
+                                        <a href="#" class="event-toggle"><i class="fa-solid fa-plus"></i></a>
+                                    </td>
+                                </tr>
+                                <tr class="card-info-row" style="display: none;">
+                                    <td colspan="4">
+                                        <div class="card border-info mb-3 event-details" style="border: none;" tabindex="0">
+                                        <div class="card-body">
+                                            <p class="card-text">
+                                                    <strong>@Html.DisplayFor(modelItem => item.EventName)</strong>
+                                                </p>
+                                            <p class="card-text">
+                                                @Html.DisplayFor(model => item.TypeEvent)
+                                            </p>
+                                            <p class="card-text" style="text-align: justify;">
+                                                @Html.DisplayFor(model => item.Description)
+                                            </p>
+                                            <p class="card-text">
+                                                @Html.DisplayFor(model => item.Organizer)
+                                            </p>
+                                            <p class="card-text">
+                                                @Html.DisplayFor(model => item.Address)
+                                            </p>
+                                            <p class="card-text">
+                                                @Html.DisplayFor(model => item.Date)
+                                            </p>
+                                            <p class="card-text">
+                                                @Html.DisplayFor(model => item.Starts)
+                                            </p>
+                                            <p class="card-text">
+                                                @Html.DisplayFor(model => item.Ends)
+                                            </p>
+                                            <p class="card-text">
+                                                @Html.DisplayFor(model => item.Price)
+                                            </p>
+                                            <a href="#" class="price-toggle"><i class="fa-solid fa-chevron-up" ></i></a>
+                                        </div>
                                         @if (User.Identity.IsAuthenticated)
                                         {
                                             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
                                             if (User.IsInRole("Admin") || item.CreatedBy == userId)
                                             {
-                                                <a asp-controller="Events" asp-action="Edit" asp-route-id="@item.Id" class="btn btn-primary" aria-label="Edit Event"><i class="fa-solid fa-pen-to-square"></i></a>
-                                                <a asp-controller="Events" asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger" aria-label="Delete Event"><i class="fa-regular fa-trash-can"></i></a>
+                                                <div class="card-footer text-right">
+
+                                                    <a asp-controller="Events" asp-action="Edit" asp-route-id="@item.Id" class="btn btn-primary" aria-label="Edit Event"><i class="fa-solid fa-pen-to-square"></i></a>
+                                                    <a asp-controller="Events" asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger" aria-label="Delete Event"><i class="fa-regular fa-trash-can"></i></a>
+                                                </div>
                                             }
+
                                         }
-                                    </td>
+                                        </div>
+                                       </td>
                                 </tr>
                             }
                         }
@@ -133,3 +167,29 @@
         </div>
     </div>
 </div>
+
+@section scripts {
+    <script>
+        $(function () {
+            $('.event-toggle').click(function (e) {
+                e.preventDefault();
+                var $row = $(this).closest('tr.table-row');
+                var $cardInfoRow = $row.next('.card-info-row');
+                $cardInfoRow.slideToggle();
+                $row.find('.card-body').toggleClass('expanded');
+
+                // Give focus to the card
+                $cardInfoRow.find('.card').focus();
+
+                $row.find('.card-body').toggleClass('expanded');
+            });
+            $('.price-toggle').click(function (e) { 
+                e.preventDefault();
+                var $cardInfoRow = $(this).closest('.card-info-row');
+                $cardInfoRow.slideToggle();
+                $(this).toggleClass('fa-chevron-up');
+            });
+        });
+
+    </script>
+}
