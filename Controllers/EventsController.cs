@@ -102,6 +102,8 @@ namespace TangoKultura.Controllers
             {
                 objEventList = upcomingCourses ? objUpcomingCoursesList : objStartedCoursesList;
             }
+            ViewData["UpcomingCourses"] = upcomingCourses.ToString();
+
 
             return View(objEventList);
         }
