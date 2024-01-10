@@ -27,23 +27,24 @@
                     <a class="btn btn-primary" asp-controller="Events" asp-action="Create">Create a New Class or Event</a>
                 </div>
             }
+            <div class="d-flex justify-content-center">
+                <form asp-controller="Events" asp-action="Index" method="get">
+                    <div class="text-center my-3">
+                        <input type="submit" name="eventType" value="Events" autocomplete="off" class="btn btn-outline-primary @if ((string)ViewData["EventType"] == "Events") {
+                        <text>active</text>
+                        }" />
+                    </div>
+                </form>
 
-            <form asp-controller="Events" asp-action="Index" method="get" class="d-inline-block">
-                <div class="text-center my-3">
-                    <input type="submit" name="eventType" value="Events" autocomplete="off" class="btn btn-outline-primary @if ((string)ViewData["EventType"] == "Events") {
-                    <text>active</text>
- }" />
-                </div>
-            </form>
-
-            <form asp-controller="Events" asp-action="Index" method="get" class="d-inline-block">
-                <div class="text-center my-3">
-                    <input type="hidden" name="eventType" value="Classes" />
-                    <input type="submit" name="eventType" value="Classes" autocomplete="off" class="btn btn-outline-info @if ((string)ViewData["EventType"] == "Classes") { 
-                     <text>active</text>
-                    }"/>
-                </div>
-            </form>
+                <form asp-controller="Events" asp-action="Index" method="get">
+                    <div class="text-center my-3">
+                        <input type="hidden" name="eventType" value="Classes" />
+                        <input type="submit" name="eventType" value="Classes" autocomplete="off" class="btn btn-outline-info @if ((string)ViewData["EventType"] == "Classes") { 
+                         <text>active</text>
+                        }"/>
+                    </div>
+                </form>
+            </div>
 
             @if ((string)ViewData["EventType"] == "Classes")
             {
