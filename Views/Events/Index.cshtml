@@ -70,7 +70,9 @@
 
 
 
-            <table class="table" summary="List of Events">
+            <div class="table-responsive">
+
+                <table class="table" summary="List of Events">
                 <caption style="display: none;">List of Events</caption>
                 <thead style="display: none;">
                     <tr>
@@ -100,12 +102,12 @@
                             {
                                 <tr class="table-row">
                                     <td>
-                                            @Html.DisplayFor(modelItem => item.EventName)
+                                        @Html.DisplayFor(modelItem => item.EventName)
                                     </td>
-                                      <td>
+                                     <td>
                                         @Html.DisplayFor(modelItem => item.TypeEvent)
-                                    </td>  
-                                    <td>
+                                    </td>
+                                        <td class="d-none d-sm-table-cell">
                                         @Html.DisplayFor(modelItem => item.Starts)
                                     </td>
                                     <td>
@@ -175,6 +177,7 @@
                     }
                 </tbody>
             </table>
+            </div>
         </div>
     </div>
 </div>
