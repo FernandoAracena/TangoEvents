@@ -145,11 +145,17 @@
                                             <p class="card-text">
                                                 @Html.DisplayFor(model => item.Date)
                                             </p>
+                                                    @if (item.TypeEvent == "Course")
+                                                    {
+                                                        <p class="card-text">
+                                                            @Html.DisplayFor(model => item.EndsDate)
+                                                        </p>
+                                                    }
+                                                    <p class="card-text">
+                                                        @Html.DisplayFor(model => item.Ends)
+                                                    </p>
                                             <p class="card-text">
                                                 @Html.DisplayFor(model => item.Starts)
-                                            </p>
-                                            <p class="card-text">
-                                                @Html.DisplayFor(model => item.Ends)
                                             </p>
                                             <p class="card-text">
                                                 @Html.DisplayFor(model => item.Price)

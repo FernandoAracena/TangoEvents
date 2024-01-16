@@ -79,7 +79,7 @@ namespace TangoKultura.Controllers
                 }
                 else if (eventType == "Events")
                 {
-                    objEventList = objEventList.Where(e => e.TypeEvent == "Milonga" || e.TypeEvent == "Concert" || e.TypeEvent == "Practice" || e.TypeEvent == "Class");
+                    objEventList = objEventList.Where(e => e.TypeEvent == "Milonga" || e.TypeEvent == "Concert" || e.TypeEvent == "Practice" || e.TypeEvent == "Class" || e.TypeEvent == "Course");
                 }
             }
 
