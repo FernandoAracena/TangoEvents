@@ -237,6 +237,7 @@ namespace TangoKultura.Controllers
                 eventFromDb.Description = obj.Description;
                 eventFromDb.Address = obj.Address;
                 eventFromDb.Date = obj.Date;
+                eventFromDb.EndsDate = obj.EndsDate;
                 eventFromDb.Starts = obj.Starts;
                 eventFromDb.Ends = obj.Ends;
                 eventFromDb.Price = obj.Price;
