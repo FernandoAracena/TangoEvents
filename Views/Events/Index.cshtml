@@ -160,6 +160,12 @@
                                             <p class="card-text">
                                                 @Html.DisplayFor(model => item.Price)
                                             </p>
+                                                    <p class="card-text">
+                                                        <a href="@Html.DisplayFor(model => item.EventLink)" target="_blank">
+                                                            <i class="fab fa-facebook"></i> 
+                                                            More Info ...
+                                                        </a>
+                                                    </p>
                                             <a href="#" class="price-toggle"><i class="fa-solid fa-chevron-up" ></i></a>
                                         </div>
                                         @if (User.Identity.IsAuthenticated)
