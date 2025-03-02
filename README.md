@@ -9,12 +9,13 @@ User Authentication & Authorization: Secure user registration and login using AS
 Responsive Design: Optimized for both desktop and mobile devices.
 Event Listings & Details: Browse upcoming tango events and view detailed information, including RSVP options.
 Administrative Dashboard: Manage events, users, and site content from an intuitive backend interface.
+
 Technologies Used
 Backend: C#, ASP.NET Core MVC
 Frontend: HTML5, CSS3, JavaScript
 Database: Entity Framework Core (SQL Server, SQLite, etc.)
 Authentication: ASP.NET Identity
-Client-side Frameworks/Libraries: (Optional – e.g., jQuery or Bootstrap for responsive design)
+Client-side Frameworks/Libraries: Bootstrap for responsive design
 
 https://tangoevents.info/
 
