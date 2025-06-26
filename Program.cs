@@ -1,6 +1,3 @@
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.EntityFrameworkCore;
@@ -37,26 +34,6 @@ builder.Services.AddCors(options =>
             .AllowAnyHeader()
             .AllowAnyMethod()
     );
-});
-
-var jwtSettings = builder.Configuration.GetSection("Jwt");
-builder.Services.AddAuthentication(options =>
-{
-    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-})
-.AddJwtBearer(options =>
-{
-    options.TokenValidationParameters = new TokenValidationParameters
-    {
-        ValidateIssuer = true,
-        ValidateAudience = true,
-        ValidateLifetime = true,
-        ValidateIssuerSigningKey = true,
-        ValidIssuer = jwtSettings["Issuer"],
-        ValidAudience = jwtSettings["Audience"],
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["Key"]))
-    };
 });
 
 var app = builder.Build();
@@ -97,6 +74,9 @@ var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityU
 var roleInitializer = new RoleInitializer(roleManager, userManager);
 await roleInitializer.SeedRoles();
 await DataHelper.ManageDataAsync(scope.ServiceProvider);
+
+// Fallback para SPA React: cualquier ruta no manejada devuelve index.html
+app.MapFallbackToFile("index.html");
 
 /*var env = app.Environment;
 
