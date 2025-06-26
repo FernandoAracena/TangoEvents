@@ -79,7 +79,7 @@ const EditEventModal: React.FC<EditEventModalProps> = ({ isOpen, onClose, event,
     setLoading(true);
     try {
       const payload = toPascalCaseEvent({ ...form });
-      const res = await fetch(`https://localhost:7279/api/EventsApi/${event.id}`, {
+      const res = await fetch(`http://localhost:8080/api/EventsApi/${event.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
