@@ -12,7 +12,15 @@ namespace TangoKultura.Helpers
             var dbContextSvc = svcProvider.GetRequiredService<ApplicationDbContext>();
 
             //Migration: This is the programmatic equivalent to Update-Database
-            await dbContextSvc.Database.MigrateAsync();
+            // await dbContextSvc.Database.MigrateAsync();
+
+            // Set default city to 'Oslo' for existing events with null or empty city
+            var eventsToUpdate = dbContextSvc.Events.Where(e => string.IsNullOrEmpty(e.City));
+            foreach (var ev in eventsToUpdate)
+            {
+                ev.City = "Oslo";
+            }
+            await dbContextSvc.SaveChangesAsync();
         }
 
 

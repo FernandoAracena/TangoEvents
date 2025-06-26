@@ -4,13 +4,16 @@
 
 namespace TangoKultura.Migrations
 {
-    public partial class seedDB : Migration
+    /// <inheritdoc />
+    public partial class SyncWithRailwayDb : Migration
     {
+        /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
 
         }
 
+        /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
 

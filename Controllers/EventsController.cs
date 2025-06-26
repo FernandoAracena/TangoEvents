@@ -11,6 +11,7 @@ using Microsoft.Extensions.Logging;
 using System.Security.Claims;
 using System.Linq;
 using System.Globalization;
+using System.Collections.Generic;
 
 namespace TangoKultura.Controllers
 {
@@ -154,6 +155,9 @@ namespace TangoKultura.Controllers
 
                 // Set the organizer of the event to the ID of the currently authenticated user
                 obj.CreatedBy = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+                // Asignar el county automáticamente según la ciudad
+                // (El campo County ya no existe en el modelo Event, solo se calcula en la API)
 
                 _context.Events.Add(obj);
                 _context.SaveChanges();

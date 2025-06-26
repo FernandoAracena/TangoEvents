@@ -14,8 +14,7 @@ namespace TangoKultura.Models
         public string Description { get; set; }
         [Required]
         public string Organizer { get; set; }
-        [Required]
-        public string CreatedBy { get; set; }
+        public string? CreatedBy { get; set; }
         [Required]
         public string Address { get; set; }
         [Required]
@@ -37,5 +36,7 @@ namespace TangoKultura.Models
 
         [Required]
         public string EventLink { get; set; }
+        [Required]
+        public required string City { get; set; }
     }
 }

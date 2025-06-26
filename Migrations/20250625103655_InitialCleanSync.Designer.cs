@@ -12,14 +12,15 @@ using TangoKultura.Data;
 namespace TangoKultura.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230905174808_seedDB")]
-    partial class seedDB
+    [Migration("20250625103655_InitialCleanSync")]
+    partial class InitialCleanSync
     {
+        /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "6.0.13")
+                .HasAnnotation("ProductVersion", "9.0.0")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -236,6 +237,14 @@ namespace TangoKultura.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("City")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<string>("Date")
                         .IsRequired()
                         .HasColumnType("text");
@@ -246,6 +255,9 @@ namespace TangoKultura.Migrations
 
                     b.Property<string>("Ends")
                         .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("EndsDate")
                         .HasColumnType("text");
 
                     b.Property<string>("EventLink")

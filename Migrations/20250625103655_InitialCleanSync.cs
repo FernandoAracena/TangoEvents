@@ -6,8 +6,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace TangoKultura.Migrations
 {
-    public partial class initpostgres : Migration
+    /// <inheritdoc />
+    public partial class InitialCleanSync : Migration
     {
+        /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
@@ -59,12 +61,15 @@ namespace TangoKultura.Migrations
                     TypeEvent = table.Column<string>(type: "text", nullable: false),
                     Description = table.Column<string>(type: "text", nullable: false),
                     Organizer = table.Column<string>(type: "text", nullable: false),
+                    CreatedBy = table.Column<string>(type: "text", nullable: false),
                     Address = table.Column<string>(type: "text", nullable: false),
                     Date = table.Column<string>(type: "text", nullable: false),
+                    EndsDate = table.Column<string>(type: "text", nullable: true),
                     Starts = table.Column<string>(type: "text", nullable: false),
                     Ends = table.Column<string>(type: "text", nullable: false),
                     Price = table.Column<string>(type: "text", nullable: false),
-                    EventLink = table.Column<string>(type: "text", nullable: false)
+                    EventLink = table.Column<string>(type: "text", nullable: false),
+                    City = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -215,6 +220,7 @@ namespace TangoKultura.Migrations
                 unique: true);
         }
 
+        /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(

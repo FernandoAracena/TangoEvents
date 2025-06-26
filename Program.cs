@@ -1,3 +1,6 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.EntityFrameworkCore;
@@ -23,6 +26,38 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.Requ
     .AddEntityFrameworkStores<ApplicationDbContext>();
 
 builder.Services.AddControllersWithViews();
+builder.Services.AddControllers(); // Habilitar controladores API
+
+// Configurar CORS para permitir peticiones desde React
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowReact",
+        policy => policy
+            .WithOrigins("http://localhost:3000")
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+    );
+});
+
+var jwtSettings = builder.Configuration.GetSection("Jwt");
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = jwtSettings["Issuer"],
+        ValidAudience = jwtSettings["Audience"],
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["Key"]))
+    };
+});
 
 var app = builder.Build();
 
@@ -42,6 +77,9 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+// Usar CORS
+app.UseCors("AllowReact");
+
 app.UseAuthentication();
 app.UseAuthorization();
 
@@ -49,12 +87,9 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Events}/{action=Index}/{id?}");
 app.MapRazorPages();
+app.MapControllers(); // Mapear controladores API
 
 var scope = app.Services.CreateScope();
-
-// Apply database migrations
-var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-dbContext.Database.Migrate();
 
 // Initialize Identity roles and manage data
 var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
