@@ -22,6 +22,8 @@ COPY Properties/ ./Properties/
 COPY Views/ ./Views/
 COPY wwwroot/ ./wwwroot/
 COPY Program.cs ./
+# Copia el build de React al wwwroot ANTES de publicar
+COPY --from=frontend-build /app/clientapp-react/build ./wwwroot
 RUN dotnet restore
 RUN dotnet publish -c Release -o /app/publish
 
@@ -29,7 +31,6 @@ RUN dotnet publish -c Release -o /app/publish
 FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS final
 WORKDIR /app
 COPY --from=build /app/publish .
-COPY --from=frontend-build /app/clientapp-react/build ./wwwroot
 ENV ASPNETCORE_URLS=http://+:8080
 EXPOSE 8080
 ENTRYPOINT ["dotnet", "TangoKultura.dll"]
