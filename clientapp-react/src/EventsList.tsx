@@ -105,7 +105,8 @@ const EventsList: React.FC = () => {
   }, [county]);
 
   useEffect(() => {
-    let url = 'http://localhost:8080/api/EventsApi?eventType=Events';
+    const apiBase = process.env.REACT_APP_API_URL || 'http://localhost:8080';
+    let url = `${apiBase}/api/EventsApi?eventType=Events`;
     const selectedCounty = county === "auto" ? autoCounty : county;
     if (selectedCounty && selectedCounty !== "All" && selectedCounty !== "") {
       url += `&county=${encodeURIComponent(selectedCounty)}`;
