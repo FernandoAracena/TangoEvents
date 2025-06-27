@@ -247,16 +247,18 @@ const EventsList: React.FC = () => {
             {grouped[date].map((event) => (
               <div
                 key={event.id}
-                className="bg-tangoWhite rounded-lg shadow-md p-6 border border-tangoGold hover:shadow-xl transition cursor-pointer hover:bg-tangoGold-light group"
+                className="bg-tangoWhite rounded-lg shadow-md p-4 border border-tangoGold hover:shadow-xl transition cursor-pointer hover:bg-tangoGold-light group min-h-[80px] flex flex-col justify-center"
                 onClick={() => setSelectedEvent(event)}
               >
-                <h4 className="text-lg font-semibold mb-1 text-tangoBlue group-hover:text-tangoGold-dark">{event.eventName}</h4>
-                <div className="text-sm text-tangoGold-dark mb-1">{event.typeEvent} &bull; {event.starts} - {event.ends}</div>
-                <div className="text-tangoGreen-dark text-sm mb-1">Organizer: {event.organizer}</div>
-                <div className="text-tangoGreen-dark text-sm mb-1">{event.city} ({event.county})</div>
+                <h4 className="text-base font-semibold mb-1 text-tangoBlue group-hover:text-tangoGold-dark truncate">{event.eventName}</h4>
+                <div className="text-xs text-tangoGold-dark mb-1 flex flex-row items-center gap-2">
+                  <span>{event.typeEvent}</span>
+                  <span className="text-gray-400">&bull;</span>
+                  <span>{event.starts} - {event.ends}</span>
+                </div>
                 {user && (event.createdBy === user.email || user.email === 'aracenafernando@gmail.com') && (
-                  <div className="mt-2 flex gap-2">
-                    <span className="text-lg text-tangoBlue font-extrabold bg-tangoGold-light px-3 py-1 rounded shadow border border-tangoGold animate-pulse">Your event</span>
+                  <div className="mt-1 flex gap-2">
+                    <span className="text-xs text-tangoBlue font-extrabold bg-tangoGold-light px-2 py-0.5 rounded shadow border border-tangoGold animate-pulse">Your event</span>
                   </div>
                 )}
               </div>
