@@ -241,9 +241,9 @@ const EventsList: React.FC = () => {
         </div>
       )}
       {Object.keys(grouped).sort((a, b) => new Date(a).getTime() - new Date(b).getTime()).map(date => (
-        <div key={date} className="mb-8">
-          <h3 className="text-xl font-bold mb-4 text-tangoBlue border-b pb-1">{formatDateTitle(grouped[date][0].date)}</h3>
-          <div className="grid gap-6 md:grid-cols-2">
+        <div key={date} className="mb-4">
+          <h3 className="text-base font-semibold mb-2 text-tangoBlue border-b pb-0.5">{formatDateTitle(grouped[date][0].date)}</h3>
+          <div className="grid gap-2 md:grid-cols-2">
             {grouped[date].map((event) => (
               <div
                 key={event.id}
