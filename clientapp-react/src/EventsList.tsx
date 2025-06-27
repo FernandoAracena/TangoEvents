@@ -146,8 +146,9 @@ const EventsList: React.FC = () => {
 
   const confirmDelete = async () => {
     if (!token || eventIdToDelete == null) return;
+    const apiBase = process.env.REACT_APP_API_URL || 'http://localhost:8080';
     try {
-      const res = await fetch(`http://localhost:8080/api/EventsApi/${eventIdToDelete}`, {
+      const res = await fetch(`${apiBase}/api/EventsApi/${eventIdToDelete}`, {
         method: 'DELETE',
         headers: {
           ...(token ? { Authorization: `Bearer ${token}` } : {})
@@ -158,7 +159,7 @@ const EventsList: React.FC = () => {
       setShowDeleteModal(false);
       setEventIdToDelete(null);
       // Refrescar eventos tras eliminar
-      let url = 'http://localhost:8080/api/EventsApi?eventType=Events';
+      let url = `${apiBase}/api/EventsApi?eventType=Events`;
       const selectedCounty = county === "auto" ? autoCounty : county;
       if (selectedCounty && selectedCounty !== "All" && selectedCounty !== "") {
         url += `&county=${encodeURIComponent(selectedCounty)}`;
@@ -316,7 +317,8 @@ const EventsList: React.FC = () => {
             setShowEditModal(false);
             setSelectedEvent(null);
             // Refrescar eventos tras editar
-            let url = 'http://localhost:8080/api/EventsApi?eventType=Events';
+            const apiBase = process.env.REACT_APP_API_URL || 'http://localhost:8080';
+            let url = `${apiBase}/api/EventsApi?eventType=Events`;
             const selectedCounty = county === "auto" ? autoCounty : county;
             if (selectedCounty && selectedCounty !== "All" && selectedCounty !== "") {
               url += `&county=${encodeURIComponent(selectedCounty)}`;
@@ -347,7 +349,8 @@ const EventsList: React.FC = () => {
           onSuccess={() => {
             setShowCreateModal(false);
             // Refrescar eventos tras crear
-            let url = 'http://localhost:8080/api/EventsApi?eventType=Events';
+            const apiBase = process.env.REACT_APP_API_URL || 'http://localhost:8080';
+            let url = `${apiBase}/api/EventsApi?eventType=Events`;
             const selectedCounty = county === "auto" ? autoCounty : county;
             if (selectedCounty && selectedCounty !== "All" && selectedCounty !== "") {
               url += `&county=${encodeURIComponent(selectedCounty)}`;
