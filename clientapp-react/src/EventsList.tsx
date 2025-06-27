@@ -200,16 +200,14 @@ const EventsList: React.FC = () => {
           </button>
         )}
       </div>
-      <h2 className="text-3xl font-bold mb-6 text-center text-tangoBlue">
+      <h2 className="text-lg font-semibold mb-2 text-center text-tangoBlue">
         Tango Events in: {" "}
-        <span className="text-tangoGreen-dark">
-          {detectedCity && detectedCity !== 'All' ? detectedCity : 'Norway'}
-        </span>
+        <span className="text-tangoGreen-dark">{detectedCity && detectedCity !== 'All' ? detectedCity : 'Norway'}</span>
       </h2>
-      <div className="mb-6 flex flex-row gap-2 justify-center overflow-x-auto md:flex-row md:items-center md:gap-4">
-        <div className="flex flex-col w-1/2 min-w-[120px] md:w-auto md:min-w-[160px]">
+      <div className="mb-3 flex flex-row gap-1 justify-center overflow-x-auto md:flex-row md:items-center md:gap-2">
+        <div className="flex flex-col w-1/2 min-w-[90px] md:w-auto md:min-w-[120px]">
           <select
-            className="border rounded px-2 py-1 text-sm text-tangoBlue focus:outline-none focus:ring-2 focus:ring-tangoGold w-full md:px-3 md:py-2 md:text-base"
+            className="border rounded px-1 py-0.5 text-xs text-tangoBlue focus:outline-none focus:ring-2 focus:ring-tangoGold w-full md:px-2 md:py-1 md:text-sm"
             value={county}
             onChange={e => setCounty(e.target.value)}
             aria-label="County"
@@ -220,9 +218,9 @@ const EventsList: React.FC = () => {
             {COUNTIES.map(c => <option key={c} value={c}>{c}</option>)}
           </select>
         </div>
-        <div className="flex flex-col w-1/2 min-w-[120px] md:w-auto md:min-w-[160px]">
+        <div className="flex flex-col w-1/2 min-w-[90px] md:w-auto md:min-w-[120px]">
           <select
-            className="border rounded px-2 py-1 text-sm text-tangoBlue focus:outline-none focus:ring-2 focus:ring-tangoGold w-full md:px-3 md:py-2 md:text-base"
+            className="border rounded px-1 py-0.5 text-xs text-tangoBlue focus:outline-none focus:ring-2 focus:ring-tangoGold w-full md:px-2 md:py-1 md:text-sm"
             value={eventTypeGroup}
             onChange={e => setEventTypeGroup(e.target.value)}
             aria-label="Type"
