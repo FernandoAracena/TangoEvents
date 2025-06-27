@@ -27,7 +27,8 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   const login = async (email: string, password: string) => {
-    const res = await fetch('http://localhost:8080/api/AuthApi/login', {
+    const apiBase = process.env.REACT_APP_API_URL || 'http://localhost:8080';
+    const res = await fetch(`${apiBase}/api/AuthApi/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password })
@@ -41,7 +42,8 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const register = async (email: string, password: string) => {
-    const res = await fetch('http://localhost:8080/api/AuthApi/register', {
+    const apiBase = process.env.REACT_APP_API_URL || 'http://localhost:8080';
+    const res = await fetch(`${apiBase}/api/AuthApi/register`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ Email: email, Password: password })
