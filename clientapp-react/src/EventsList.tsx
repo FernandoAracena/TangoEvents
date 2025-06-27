@@ -206,26 +206,28 @@ const EventsList: React.FC = () => {
           {detectedCity && detectedCity !== 'All' ? detectedCity : 'Norway'}
         </span>
       </h2>
-      <div className="mb-6 flex flex-col gap-4 justify-center md:flex-row md:items-center">
-        <div className="flex flex-col w-full md:w-auto">
-          <label className="font-semibold text-tangoBlue mb-1">County:</label>
+      <div className="mb-6 flex flex-row gap-2 justify-center overflow-x-auto md:flex-row md:items-center md:gap-4">
+        <div className="flex flex-col w-1/2 min-w-[120px] md:w-auto md:min-w-[160px]">
           <select
-            className="border rounded px-3 py-2 text-tangoBlue focus:outline-none focus:ring-2 focus:ring-tangoGold w-full md:min-w-[160px]"
+            className="border rounded px-2 py-1 text-sm text-tangoBlue focus:outline-none focus:ring-2 focus:ring-tangoGold w-full md:px-3 md:py-2 md:text-base"
             value={county}
             onChange={e => setCounty(e.target.value)}
+            aria-label="County"
           >
+            <option value="" disabled hidden>County</option>
             <option value="All">All</option>
             <option value="auto">Auto (Detect my county)</option>
             {COUNTIES.map(c => <option key={c} value={c}>{c}</option>)}
           </select>
         </div>
-        <div className="flex flex-col w-full md:w-auto">
-          <label className="font-semibold text-tangoBlue mb-1">Type:</label>
+        <div className="flex flex-col w-1/2 min-w-[120px] md:w-auto md:min-w-[160px]">
           <select
-            className="border rounded px-3 py-2 text-tangoBlue focus:outline-none focus:ring-2 focus:ring-tangoGold w-full md:min-w-[160px]"
+            className="border rounded px-2 py-1 text-sm text-tangoBlue focus:outline-none focus:ring-2 focus:ring-tangoGold w-full md:px-3 md:py-2 md:text-base"
             value={eventTypeGroup}
             onChange={e => setEventTypeGroup(e.target.value)}
+            aria-label="Type"
           >
+            <option value="" disabled hidden>Type</option>
             {EVENT_TYPE_GROUPS.map(group => (
               <option key={group.label} value={group.label}>{group.label}</option>
             ))}
