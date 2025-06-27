@@ -247,7 +247,7 @@ const EventsList: React.FC = () => {
             {grouped[date].map((event) => (
               <div
                 key={event.id}
-                className="bg-tangoWhite rounded-lg shadow-md p-4 border border-tangoGold hover:shadow-xl transition cursor-pointer hover:bg-tangoGold-light group min-h-[80px] flex flex-col justify-center"
+                className="bg-tangoWhite rounded-lg shadow-md p-4 border border-tangoGold hover:shadow-xl transition cursor-pointer hover:bg-tangoGold-light group min-h-[80px] flex flex-col justify-center w-full max-w-xs mx-auto box-border"
                 onClick={() => setSelectedEvent(event)}
               >
                 <h4 className="text-base font-semibold mb-1 text-tangoBlue group-hover:text-tangoGold-dark truncate">{event.eventName}</h4>
