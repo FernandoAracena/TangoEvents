@@ -40,26 +40,26 @@ const Navbar: React.FC = () => {
   };
 
   return (
-    <nav className="bg-tangoGreen-dark text-white shadow-md py-3 px-6 flex items-center justify-between flex-row">
-      <div className="flex items-center gap-2">
-        <a href="/" className="font-bold text-xl tracking-wide hover:text-tangoGold transition">TangoEvents</a>
+    <nav className="bg-tangoGreen-dark text-white shadow-md py-1 px-4 flex items-center justify-between flex-row min-h-[40px]">
+      <div className="flex items-center gap-1">
+        <a href="/" className="font-bold text-lg tracking-wide hover:text-tangoGold transition leading-tight">TangoEvents</a>
       </div>
-      <div className="flex gap-4 text-base items-center ml-4">
+      <div className="flex gap-2 text-sm items-center ml-2">
         {user ? (
           <>
             <span className="font-semibold">Welcome!</span>
-            <button onClick={handleLogout} className="hover:text-tangoGold transition">Logout</button>
+            <button onClick={handleLogout} className="hover:text-tangoGold transition px-1 py-0.5 text-sm">Logout</button>
           </>
         ) : (
           <>
-            <button onClick={handleOpenRegister} className="hover:text-tangoGold transition bg-transparent border-none">Register</button>
-            <button onClick={handleOpenLogin} className="hover:text-tangoGold transition bg-transparent border-none">Login</button>
+            <button onClick={handleOpenRegister} className="hover:text-tangoGold transition bg-transparent border-none px-1 py-0.5 text-sm">Register</button>
+            <button onClick={handleOpenLogin} className="hover:text-tangoGold transition bg-transparent border-none px-1 py-0.5 text-sm">Login</button>
           </>
         )}
       </div>
       <LoginModal isOpen={loginOpen} onClose={() => setLoginOpen(false)} onLogin={handleLogin} />
       <RegisterModal isOpen={registerOpen} onClose={() => setRegisterOpen(false)} onRegister={handleRegister} />
-      {error && <div className="text-red-500 text-sm absolute top-2 right-2">{error}</div>}
+      {error && <div className="text-red-500 text-xs absolute top-2 right-2">{error}</div>}
     </nav>
   );
 };

@@ -17,6 +17,7 @@ const EditEventModal: React.FC<EditEventModalProps> = ({ isOpen, onClose, event,
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   const { user, token } = useUser();
+  const apiBase = process.env.REACT_APP_API_URL || 'http://localhost:8080';
 
   React.useEffect(() => {
     setForm(event);
@@ -79,7 +80,7 @@ const EditEventModal: React.FC<EditEventModalProps> = ({ isOpen, onClose, event,
     setLoading(true);
     try {
       const payload = toPascalCaseEvent({ ...form });
-      const res = await fetch(`http://localhost:8080/api/EventsApi/${event.id}`, {
+      const res = await fetch(`${apiBase}/api/EventsApi/${event.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

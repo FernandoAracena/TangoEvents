@@ -115,6 +115,7 @@ const CreateEvent: React.FC<CreateEventProps> = ({ onSuccess }) => {
       }
     }
     try {
+      const apiBase = process.env.REACT_APP_API_URL || 'http://localhost:8080';
       // Si hay varias fechas, crear un array de eventos, si no, solo uno
       let payload;
       if (form.typeEvent !== 'Course' && multiDates.length > 0) {
@@ -122,7 +123,7 @@ const CreateEvent: React.FC<CreateEventProps> = ({ onSuccess }) => {
       } else {
         payload = toPascalCaseEvent({ ...form, CreatedBy: user.email });
       }
-      const res = await fetch('http://localhost:8080/api/EventsApi', {
+      const res = await fetch(`${apiBase}/api/EventsApi`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
