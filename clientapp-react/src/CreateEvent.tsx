@@ -122,7 +122,7 @@ const CreateEvent: React.FC<CreateEventProps> = ({ onSuccess }) => {
       } else {
         payload = toPascalCaseEvent({ ...form, CreatedBy: user.email });
       }
-      const res = await fetch('https://localhost:7279/api/EventsApi', {
+      const res = await fetch('http://localhost:8080/api/EventsApi', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
