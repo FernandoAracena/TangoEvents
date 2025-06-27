@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using TangoKultura.Data;
 using TangoKultura.Helpers;
 using Microsoft.Extensions.Hosting;
+using Microsoft.AspNetCore.HttpOverrides;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -37,6 +38,12 @@ builder.Services.AddCors(options =>
 });
 
 var app = builder.Build();
+
+// Middleware para detectar HTTPS detrás de proxy (Railway)
+app.UseForwardedHeaders(new ForwardedHeadersOptions
+{
+    ForwardedHeaders = ForwardedHeaders.XForwardedProto | ForwardedHeaders.XForwardedFor
+});
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
