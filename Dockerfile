@@ -31,6 +31,6 @@ WORKDIR /app
 COPY --from=build /app/publish .
 # Copia el build de React al wwwroot FINAL (después del publish)
 COPY --from=frontend-build /app/clientapp-react/build ./wwwroot
-ENV ASPNETCORE_URLS=https://+:8080;http://+:8080
+ENV ASPNETCORE_URLS=http://+:8080
 EXPOSE 8080
 ENTRYPOINT ["dotnet", "TangoKultura.dll"]

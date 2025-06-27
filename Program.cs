@@ -89,12 +89,13 @@ app.UseSpa(spa =>
     }
 });*/
 
-// Redirigir HTTP a HTTPS en producción
+// Redirigir HTTP a HTTPS solo si el request original fue HTTP (usando X-Forwarded-Proto)
 if (!app.Environment.IsDevelopment())
 {
     app.Use(async (context, next) =>
     {
-        if (!context.Request.IsHttps)
+        var forwardedProto = context.Request.Headers["X-Forwarded-Proto"].ToString();
+        if (!context.Request.IsHttps && forwardedProto != "https")
         {
             var withHttps = "https://" + context.Request.Host + context.Request.Path + context.Request.QueryString;
             context.Response.Redirect(withHttps, permanent: true);
