@@ -269,10 +269,10 @@ const EventsList: React.FC = () => {
 
       {/* Modal de detalles */}
       {selectedEvent && (
-        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-          <div className="bg-tangoWhite rounded-lg shadow-lg p-8 max-w-md w-full relative animate-fadeIn border-2 border-tangoGold">
+        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 overscroll-contain">
+          <div className="bg-tangoWhite w-full max-w-full sm:max-w-md p-2 sm:p-8 rounded-none sm:rounded-lg shadow-lg relative animate-fadeIn border-2 border-tangoGold overflow-y-auto overflow-x-auto max-h-[90vh]">
             <button
-              className="absolute top-2 right-2 text-tangoGreen hover:text-tangoGold-dark text-2xl font-bold"
+              className="absolute top-2 right-2 text-tangoGreen hover:text-tangoGold-dark text-2xl font-bold z-10"
               onClick={() => setSelectedEvent(null)}
               aria-label="Cerrar"
             >
@@ -280,13 +280,13 @@ const EventsList: React.FC = () => {
             </button>
             <h3 className="text-2xl font-bold mb-2 text-tangoBlue">{selectedEvent.eventName}</h3>
             <div className="text-sm text-tangoGold-dark mb-2">{selectedEvent.typeEvent} &bull; {parseDDMMYYYY(selectedEvent.date)?.toLocaleDateString()} {selectedEvent.starts} - {selectedEvent.ends}</div>
-            <div className="text-tangoGreen-dark mb-2">{selectedEvent.description}</div>
-            <div className="text-tangoGreen-dark text-sm mb-1">Organizer: {selectedEvent.organizer}</div>
-            <div className="text-tangoGreen-dark text-sm mb-1">Address: {selectedEvent.address}</div>
-            <div className="text-tangoGold-dark text-sm mb-1">Price: {selectedEvent.price}</div>
-            <div className="text-tangoGreen-dark text-sm mb-1">City: {selectedEvent.city} ({selectedEvent.county})</div>
+            <div className="text-tangoGreen-dark mb-2 break-words">{selectedEvent.description}</div>
+            <div className="text-tangoGreen-dark text-sm mb-1 break-words">Organizer: {selectedEvent.organizer}</div>
+            <div className="text-tangoGreen-dark text-sm mb-1 break-words">Address: {selectedEvent.address}</div>
+            <div className="text-tangoGold-dark text-sm mb-1 break-words">Price: {selectedEvent.price}</div>
+            <div className="text-tangoGreen-dark text-sm mb-1 break-words">City: {selectedEvent.city} ({selectedEvent.county})</div>
             {selectedEvent.eventLink && (
-              <a href={selectedEvent.eventLink} target="_blank" rel="noopener noreferrer" className="text-tangoGreen hover:text-tangoGold-dark text-sm">More Info...</a>
+              <a href={selectedEvent.eventLink} target="_blank" rel="noopener noreferrer" className="text-tangoGreen hover:text-tangoGold-dark text-sm break-all">More Info...</a>
             )}
             {user && (selectedEvent.createdBy === user.email || user.email === 'aracenafernando@gmail.com') && (
               <div className="flex gap-2 mt-4 justify-center">
