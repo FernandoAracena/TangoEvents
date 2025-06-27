@@ -12,8 +12,8 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children }) => {
   if (!isOpen) return null;
   // Usar portal para renderizar el modal en el body y evitar stacking context
   return ReactDOM.createPortal(
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="bg-white rounded-lg shadow-lg w-full max-w-md p-4 sm:p-6 relative mx-2 overflow-y-auto max-h-[90vh]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 overscroll-contain">
+      <div className="w-full max-w-sm sm:max-w-md h-auto max-h-[90vh] bg-white rounded-none sm:rounded-lg shadow-lg p-2 sm:p-6 relative mx-0 sm:mx-2 overflow-y-auto">
         <button
           className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
           onClick={onClose}
