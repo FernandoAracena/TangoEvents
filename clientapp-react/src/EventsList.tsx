@@ -206,11 +206,11 @@ const EventsList: React.FC = () => {
           {detectedCity && detectedCity !== 'All' ? detectedCity : 'Norway'}
         </span>
       </h2>
-      <div className="mb-6 flex flex-col md:flex-row items-center gap-4 justify-center">
-        <div className="flex flex-col md:flex-row items-center gap-2">
-          <label className="font-semibold text-tangoBlue">County:</label>
+      <div className="mb-6 flex flex-col gap-4 justify-center md:flex-row md:items-center">
+        <div className="flex flex-col w-full md:w-auto">
+          <label className="font-semibold text-tangoBlue mb-1">County:</label>
           <select
-            className="border rounded px-3 py-2 text-tangoBlue focus:outline-none focus:ring-2 focus:ring-tangoGold min-w-[160px]"
+            className="border rounded px-3 py-2 text-tangoBlue focus:outline-none focus:ring-2 focus:ring-tangoGold w-full md:min-w-[160px]"
             value={county}
             onChange={e => setCounty(e.target.value)}
           >
@@ -219,10 +219,10 @@ const EventsList: React.FC = () => {
             {COUNTIES.map(c => <option key={c} value={c}>{c}</option>)}
           </select>
         </div>
-        <div className="flex flex-col md:flex-row items-center gap-2">
-          <label className="font-semibold text-tangoBlue">Type:</label>
+        <div className="flex flex-col w-full md:w-auto">
+          <label className="font-semibold text-tangoBlue mb-1">Type:</label>
           <select
-            className="border rounded px-3 py-2 text-tangoBlue focus:outline-none focus:ring-2 focus:ring-tangoGold min-w-[160px]"
+            className="border rounded px-3 py-2 text-tangoBlue focus:outline-none focus:ring-2 focus:ring-tangoGold w-full md:min-w-[160px]"
             value={eventTypeGroup}
             onChange={e => setEventTypeGroup(e.target.value)}
           >

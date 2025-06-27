@@ -40,14 +40,14 @@ const Navbar: React.FC = () => {
   };
 
   return (
-    <nav className="bg-tangoGreen-dark text-white shadow-md py-3 px-6 flex items-center justify-between">
-      <div className="flex items-center gap-2">
+    <nav className="bg-tangoGreen-dark text-white shadow-md py-3 px-6 flex flex-col sm:flex-row items-start sm:items-center justify-between">
+      <div className="flex items-center gap-2 w-full sm:w-auto">
         <a href="/" className="font-bold text-xl tracking-wide hover:text-tangoGold transition">TangoEvents</a>
       </div>
-      <div className="flex gap-6 text-base">
+      <div className="flex gap-2 sm:gap-6 text-base w-full sm:w-auto mt-2 sm:mt-0 items-center">
         {user ? (
           <>
-            <span className="font-semibold">{user.email}</span>
+            <span className="font-semibold truncate max-w-[140px] sm:max-w-none overflow-hidden text-ellipsis">{user.email}</span>
             <button onClick={handleLogout} className="hover:text-tangoGold transition">Logout</button>
           </>
         ) : (
