@@ -189,22 +189,22 @@ const EventsList: React.FC = () => {
   if (error) return <div style={{ color: 'red' }}>Error: {error}</div>;
 
   return (
-    <div className="max-w-4xl mx-auto p-4">
-      <div className="flex justify-end mb-4">
+    <div className="max-w-4xl mx-auto pt-2 pb-4 px-2">
+      <div className="flex justify-end mb-2">
         {user && (
           <button
-            className="bg-tangoBlue text-white px-4 py-2 rounded hover:bg-tangoGold transition"
+            className="bg-tangoBlue text-white px-3 py-1 rounded hover:bg-tangoGold transition text-sm"
             onClick={() => setShowCreateModal(true)}
           >
             + Create Event or Class
           </button>
         )}
       </div>
-      <h2 className="text-lg font-semibold mb-2 text-center text-tangoBlue">
+      <h2 className="text-base font-semibold mb-1 text-center text-tangoBlue">
         Tango Events in: {" "}
         <span className="text-tangoGreen-dark">{detectedCity && detectedCity !== 'All' ? detectedCity : 'Norway'}</span>
       </h2>
-      <div className="mb-3 flex flex-row gap-1 justify-center overflow-x-auto md:flex-row md:items-center md:gap-2">
+      <div className="mb-2 flex flex-row gap-1 justify-center overflow-x-auto md:flex-row md:items-center md:gap-2">
         <div className="flex flex-col w-1/2 min-w-[90px] md:w-auto md:min-w-[120px]">
           <select
             className="border rounded px-1 py-0.5 text-xs text-tangoBlue focus:outline-none focus:ring-2 focus:ring-tangoGold w-full md:px-2 md:py-1 md:text-sm"
