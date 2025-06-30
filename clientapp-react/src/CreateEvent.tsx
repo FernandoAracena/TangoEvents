@@ -45,15 +45,52 @@ const CreateEvent: React.FC<CreateEventProps> = ({ onSuccess }) => {
     setForm({ ...form, [name]: date });
   };
 
-  const handleRepeatOptionChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setRepeatOption(e.target.value);
-    if (e.target.value === 'none') setMultiDates([]);
+  const handleRepeatOptionChange = (option: string) => {
+    setRepeatOption(option);
+    if (option === 'none') {
+      if (form.date) setMultiDates([form.date]);
+      else setMultiDates([]);
+    } else if (form.date && repeatUntil) {
+      // Generar fechas de repetición en formato dd-MM-yyyy
+      const parseDate = (str: string) => {
+        const [d, m, y] = str.split('-');
+        return new Date(Number(y), Number(m) - 1, Number(d));
+      };
+      const formatDate = (d: Date) => `${d.getDate().toString().padStart(2, '0')}-${(d.getMonth()+1).toString().padStart(2, '0')}-${d.getFullYear()}`;
+      let dates: string[] = [];
+      let current = parseDate(form.date);
+      const end = parseDate(repeatUntil);
+      while (current <= end) {
+        dates.push(formatDate(current));
+        if (option === 'weekly') current.setDate(current.getDate() + 7);
+        else if (option === 'biweekly') current.setDate(current.getDate() + 14);
+        else if (option === 'monthly') current.setMonth(current.getMonth() + 1);
+        else break;
+      }
+      setMultiDates(dates);
+    }
   };
-  const handleMultiDateChange = (dates: string[]) => {
-    setMultiDates(dates);
-  };
+
   const handleRepeatUntilChange = (date: string) => {
     setRepeatUntil(date);
+    if (repeatOption !== 'none' && form.date && date) {
+      const parseDate = (str: string) => {
+        const [d, m, y] = str.split('-');
+        return new Date(Number(y), Number(m) - 1, Number(d));
+      };
+      const formatDate = (d: Date) => `${d.getDate().toString().padStart(2, '0')}-${(d.getMonth()+1).toString().padStart(2, '0')}-${d.getFullYear()}`;
+      let dates: string[] = [];
+      let current = parseDate(form.date);
+      const end = parseDate(date);
+      while (current <= end) {
+        dates.push(formatDate(current));
+        if (repeatOption === 'weekly') current.setDate(current.getDate() + 7);
+        else if (repeatOption === 'biweekly') current.setDate(current.getDate() + 14);
+        else if (repeatOption === 'monthly') current.setMonth(current.getMonth() + 1);
+        else break;
+      }
+      setMultiDates(dates);
+    }
   };
 
   // Validación extra para fechas y horas
@@ -204,7 +241,7 @@ const CreateEvent: React.FC<CreateEventProps> = ({ onSuccess }) => {
             value={form.date}
             onChange={handleDatePickerChange('date')}
             repeatOption={repeatOption}
-            onRepeatOptionChange={setRepeatOption}
+            onRepeatOptionChange={handleRepeatOptionChange}
             repeatUntil={repeatUntil}
             onRepeatUntilChange={handleRepeatUntilChange}
             multiDates={multiDates}
