@@ -93,6 +93,11 @@ const EditEventModal: React.FC<EditEventModalProps> = ({ isOpen, onClose, event,
         setLoading(false);
         return;
       }
+      if (res.status === 403) {
+        setError('No tienes permisos para editar este evento.');
+        setLoading(false);
+        return;
+      }
       if (!res.ok) throw new Error('Failed to update event');
       setSuccess(true);
       if (onSuccess) onSuccess();

@@ -131,9 +131,24 @@ const CreateEvent: React.FC<CreateEventProps> = ({ onSuccess }) => {
         },
         body: JSON.stringify(payload),
       });
+      if (!res.ok) {
+        if (res.status === 401) {
+          throw new Error('No autorizado. Por favor inicia sesión.');
+        }
+        if (res.status === 403) {
+          throw new Error('No tienes permisos para realizar esta acción.');
+        }
+        let errorMsg = 'Error desconocido';
+        try {
+          const data = await res.json();
+          errorMsg = data.message || errorMsg;
+        } catch {
+          // Si no hay JSON, ignora
+        }
+        throw new Error(errorMsg);
+      }
       const data = await res.json();
       console.log('Evento creado (respuesta backend):', data);
-      if (!res.ok) throw new Error('Failed to create event');
       setSuccess(true);
       setForm(initialState);
       setMultiDates([]);

@@ -39,6 +39,19 @@ const Navbar: React.FC = () => {
     setRegisterOpen(true);
   };
 
+  // Detectar expiración de sesión (401 global)
+  React.useEffect(() => {
+    const handle401 = (event: any) => {
+      if (event.detail && event.detail.status === 401) {
+        setError('Your session has expired. Please log in again.');
+        logout();
+        setLoginOpen(true);
+      }
+    };
+    window.addEventListener('session-expired', handle401);
+    return () => window.removeEventListener('session-expired', handle401);
+  }, [logout]);
+
   return (
     <nav className="bg-tangoGreen-dark text-white shadow-md py-1 px-4 flex items-center justify-between flex-row min-h-[40px]">
       <div className="flex items-center gap-1">

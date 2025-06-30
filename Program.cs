@@ -39,6 +39,8 @@ builder.Services.AddCors(options =>
 
 builder.Services.ConfigureApplicationCookie(options =>
 {
+    options.ExpireTimeSpan = TimeSpan.FromHours(1); // Expira en 1 hora
+    options.SlidingExpiration = false; // No renueva automáticamente
     options.Events.OnRedirectToLogin = context =>
     {
         if (context.Request.Path.StartsWithSegments("/api"))

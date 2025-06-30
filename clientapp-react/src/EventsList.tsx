@@ -154,6 +154,13 @@ const EventsList: React.FC = () => {
           ...(token ? { Authorization: `Bearer ${token}` } : {})
         }
       });
+      if (res.status === 401) {
+        window.dispatchEvent(new CustomEvent('session-expired', { detail: { status: 401 } }));
+        throw new Error('Your session has expired. Please log in again.');
+      }
+      if (res.status === 403) {
+        throw new Error('No tienes permisos para eliminar este evento.');
+      }
       if (!res.ok) throw new Error('Failed to delete event');
       setSelectedEvent(null);
       setShowDeleteModal(false);
