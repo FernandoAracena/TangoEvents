@@ -141,12 +141,6 @@ const RepetitionDatePicker: React.FC<RepetitionDatePickerProps> = ({
               dateFormat="dd-MM-yyyy"
               placeholderText="Select end date (dd-MM-yyyy)"
             />
-            <div className="text-sm text-tangoBlue mt-2">Occurrences:</div>
-            <div className="flex flex-wrap gap-2">
-              {multiDates.map(d => (
-                <span key={d} className="bg-tangoGold-light text-tangoBlue px-2 py-1 rounded text-xs">{d}</span>
-              ))}
-            </div>
           </div>
         )}
       </div>
