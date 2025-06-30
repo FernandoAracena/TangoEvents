@@ -76,9 +76,13 @@ const RepetitionDatePicker: React.FC<RepetitionDatePickerProps> = ({
       if (repeatOption !== 'none' && repeatUntilDate) {
         const autoDates = generateDates().filter(Boolean).map(d => format(d!, 'dd-MM-yyyy'));
         onMultiDatesChange(autoDates);
+      } else {
+        // Si no hay repetición, solo la fecha seleccionada
+        onMultiDatesChange([format(date, 'dd-MM-yyyy')]);
       }
     } else {
       onChange('');
+      onMultiDatesChange([]);
     }
   };
 
@@ -117,6 +121,7 @@ const RepetitionDatePicker: React.FC<RepetitionDatePickerProps> = ({
         dayClassName={date => isWeekend(date) ? 'bg-tangoGold-light text-tangoBlue' : ''}
         dateFormat="dd-MM-yyyy"
         placeholderText="Select date (dd-MM-yyyy)"
+        autoComplete="off"
       />
       <div className="mt-2">
         {/* <label className="font-semibold text-tangoBlue">Repetition:</label> */}
