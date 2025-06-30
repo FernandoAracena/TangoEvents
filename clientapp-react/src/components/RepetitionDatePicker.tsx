@@ -85,19 +85,19 @@ const RepetitionDatePicker: React.FC<RepetitionDatePickerProps> = ({
   const handleRepeatOptionChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     onRepeatOptionChange(e.target.value);
     if (e.target.value === 'none') {
-      if (selected) onMultiDatesChange([selected.toISOString().slice(0, 10)]);
+      if (selected) onMultiDatesChange([format(selected, 'dd-MM-yyyy')]);
       else onMultiDatesChange([]);
     } else if (selected && repeatUntilDate) {
-      const autoDates = generateDates().filter(Boolean).map(d => d!.toISOString().slice(0, 10));
+      const autoDates = generateDates().filter(Boolean).map(d => format(d!, 'dd-MM-yyyy'));
       onMultiDatesChange(autoDates);
     }
   };
 
   const handleRepeatUntilChange = (date: Date | null) => {
     if (date) {
-      onRepeatUntilChange(date.toISOString().slice(0, 10));
+      onRepeatUntilChange(format(date, 'dd-MM-yyyy'));
       if (selected && repeatOption !== 'none') {
-        const autoDates = generateDates().filter(Boolean).map(d => d!.toISOString().slice(0, 10));
+        const autoDates = generateDates().filter(Boolean).map(d => format(d!, 'dd-MM-yyyy'));
         onMultiDatesChange(autoDates);
       }
     } else {
