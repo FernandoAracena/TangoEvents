@@ -89,12 +89,12 @@ const EditEventModal: React.FC<EditEventModalProps> = ({ isOpen, onClose, event,
         body: JSON.stringify(payload),
       });
       if (res.status === 401) {
-        setError('No autorizado. Solo el creador puede editar este evento o tu sesión expiró.');
+        setError('Unauthorized. Only the creator can edit this event or your session has expired.');
         setLoading(false);
         return;
       }
       if (res.status === 403) {
-        setError('No tienes permisos para editar este evento.');
+        setError('You do not have permission to edit this event.');
         setLoading(false);
         return;
       }

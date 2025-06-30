@@ -133,17 +133,18 @@ const CreateEvent: React.FC<CreateEventProps> = ({ onSuccess }) => {
       });
       if (!res.ok) {
         if (res.status === 401) {
-          throw new Error('No autorizado. Por favor inicia sesión.');
+          window.dispatchEvent(new CustomEvent('session-expired', { detail: { status: 401 } }));
+          throw new Error('Unauthorized. Please log in again.');
         }
         if (res.status === 403) {
-          throw new Error('No tienes permisos para realizar esta acción.');
+          throw new Error('You do not have permission to perform this action.');
         }
-        let errorMsg = 'Error desconocido';
+        let errorMsg = 'Unknown error';
         try {
           const data = await res.json();
           errorMsg = data.message || errorMsg;
         } catch {
-          // Si no hay JSON, ignora
+          // If no JSON, ignore
         }
         throw new Error(errorMsg);
       }

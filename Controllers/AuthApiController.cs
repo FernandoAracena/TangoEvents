@@ -61,7 +61,7 @@ namespace TangoKultura.Controllers
                 issuer: _config["Jwt:Issuer"],
                 audience: _config["Jwt:Audience"],
                 claims: claims,
-                expires: DateTime.Now.AddDays(7),
+                expires: DateTime.Now.AddHours(1), // 1 hour expiration
                 signingCredentials: creds
             );
             return new JwtSecurityTokenHandler().WriteToken(token);

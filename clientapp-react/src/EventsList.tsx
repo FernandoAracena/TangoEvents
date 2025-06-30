@@ -155,11 +155,10 @@ const EventsList: React.FC = () => {
         }
       });
       if (res.status === 401) {
-        window.dispatchEvent(new CustomEvent('session-expired', { detail: { status: 401 } }));
-        throw new Error('Your session has expired. Please log in again.');
+        throw new Error('Unauthorized. Only the creator or an admin can delete this event or your session has expired.');
       }
       if (res.status === 403) {
-        throw new Error('No tienes permisos para eliminar este evento.');
+        throw new Error('You do not have permission to delete this event.');
       }
       if (!res.ok) throw new Error('Failed to delete event');
       setSelectedEvent(null);
