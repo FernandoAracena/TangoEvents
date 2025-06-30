@@ -42,7 +42,19 @@ var app = builder.Build();
 // Middleware para detectar HTTPS detrás de proxy (Railway)
 app.UseForwardedHeaders(new ForwardedHeadersOptions
 {
-    ForwardedHeaders = ForwardedHeaders.XForwardedProto | ForwardedHeaders.XForwardedFor
+    ForwardedHeaders = ForwardedHeaders.XForwardedProto | ForwardedHeaders.XForwardedFor,
+    KnownNetworks = { }, // Trust all networks
+    KnownProxies = { }
+});
+
+// Forzar scheme HTTPS si el request original fue HTTPS
+app.Use((context, next) =>
+{
+    if (context.Request.Headers.TryGetValue("X-Forwarded-Proto", out var proto) && proto == "https")
+    {
+        context.Request.Scheme = "https";
+    }
+    return next();
 });
 
 // Configure the HTTP request pipeline.
