@@ -116,10 +116,31 @@ const CreateEvent: React.FC<CreateEventProps> = ({ onSuccess }) => {
     }
     try {
       const apiBase = process.env.REACT_APP_API_URL || 'http://localhost:8080';
+      // --- Generar fechas de repetición justo antes de enviar ---
+      let datesToSend = multiDates;
+      if (repeatOption !== 'none' && form.date && repeatUntil) {
+        // Generar fechas de repetición en formato dd-MM-yyyy
+        const parseDate = (str: string) => {
+          const [d, m, y] = str.split('-');
+          return new Date(Number(y), Number(m) - 1, Number(d));
+        };
+        const formatDate = (d: Date) => `${d.getDate().toString().padStart(2, '0')}-${(d.getMonth()+1).toString().padStart(2, '0')}-${d.getFullYear()}`;
+        let dates: string[] = [];
+        let current = parseDate(form.date);
+        const end = parseDate(repeatUntil);
+        while (current <= end) {
+          dates.push(formatDate(current));
+          if (repeatOption === 'weekly') current.setDate(current.getDate() + 7);
+          else if (repeatOption === 'biweekly') current.setDate(current.getDate() + 14);
+          else if (repeatOption === 'monthly') current.setMonth(current.getMonth() + 1);
+          else break;
+        }
+        datesToSend = dates;
+      }
       // Si hay varias fechas, crear un array de eventos, si no, solo uno
       let payload;
-      if (form.typeEvent !== 'Course' && multiDates.length > 0) {
-        payload = multiDates.map(date => toPascalCaseEvent({ ...form, date, CreatedBy: user.email }));
+      if (form.typeEvent !== 'Course' && datesToSend.length > 0) {
+        payload = datesToSend.map(date => toPascalCaseEvent({ ...form, date, CreatedBy: user.email }));
       } else {
         payload = toPascalCaseEvent({ ...form, CreatedBy: user.email });
       }
