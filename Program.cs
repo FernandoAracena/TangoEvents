@@ -110,7 +110,7 @@ if (app.Environment.IsDevelopment())
 }
 else
 {
-    app.UseExceptionHandler("/Events/Error");
+    // app.UseExceptionHandler("/Events/Error"); // Obsolete MVC error handler
     app.UseHsts();
 }
 
@@ -125,9 +125,9 @@ app.UseCors("AllowReact");
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Events}/{action=Index}/{id?}");
+// app.MapControllerRoute(
+//     name: "default",
+//     pattern: "{controller=Events}/{action=Index}/{id?}");
 app.MapRazorPages();
 app.MapControllers(); // Mapear controladores API
 
