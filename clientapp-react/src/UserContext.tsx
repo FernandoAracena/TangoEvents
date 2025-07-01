@@ -33,15 +33,21 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password })
     });
+
     if (!res.ok) {
-        let msg = 'Login failed';
+        let msg = 'Login failed. Please try again.'; // Default message
         try {
-            const data = await res.json();
-            // Assuming the error response for login is a simple string or has a message property
-            msg = data.message || data.title || (typeof data === 'string' ? data : 'Invalid credentials');
-        } catch {}
+            // The backend sends plain text for 401, so use .text()
+            const errorText = await res.text();
+            if (errorText) {
+                msg = errorText;
+            }
+        } catch {
+            // Keep the default message if reading text fails
+        }
         throw new Error(msg);
     }
+
     const data = await res.json();
     setToken(data.token);
     setUser({ email: data.email });
