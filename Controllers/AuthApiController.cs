@@ -40,10 +40,12 @@ namespace TangoKultura.Controllers
         {
             var user = await _userManager.FindByEmailAsync(model.Email);
             if (user == null)
-                return Unauthorized("Invalid credentials");
+                return Unauthorized("User not found. Please check your email or register.");
+
             var result = await _signInManager.CheckPasswordSignInAsync(user, model.Password, false);
             if (!result.Succeeded)
-                return Unauthorized("Invalid credentials");
+                return Unauthorized("Invalid password. Please try again.");
+
             return Ok(new { token = GenerateJwtToken(user), email = user.Email });
         }
 
