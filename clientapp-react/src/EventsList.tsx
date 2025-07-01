@@ -190,32 +190,53 @@ const EventsList: React.FC = () => {
 
   // Reemplazar el useEffect de geolocalización:
   useEffect(() => {
-    if (county === "auto" && geoStatus === 'pending') {
-      // Añadir un pequeño retraso para evitar race conditions con el prompt del navegador
-      const timer = setTimeout(() => {
-        if (navigator.geolocation) {
-          navigator.geolocation.getCurrentPosition(async (pos) => {
-            const c = await getCountyFromPosition(pos.coords.latitude, pos.coords.longitude);
-            setAutoCounty(c);
-            setGeoStatus('success');
-            setGeoError(null);
-          }, (err) => {
-            console.error("Geolocation error:", err);
-            setGeoError(`Error ${err.code}: ${err.message}`);
-            setAutoCounty("Unknown");
-            setGeoStatus('error');
-          }, {
-            timeout: 15000, // 15 segundos de timeout
-            enableHighAccuracy: true
-          });
-        } else {
-          setGeoError("Geolocation is not supported by this browser.");
+    const requestGeolocation = () => {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(async (pos) => {
+          const c = await getCountyFromPosition(pos.coords.latitude, pos.coords.longitude);
+          setAutoCounty(c);
+          setGeoStatus('success');
+          setGeoError(null);
+        }, (err) => {
+          console.error("Geolocation error:", err);
+          let message = `Error ${err.code}: ${err.message}`;
+          if (err.code === 1) { // PERMISSION_DENIED
+            message = "Geolocation permission denied. To use this feature, please enable location services for this site in your browser settings.";
+          }
+          setGeoError(message);
           setAutoCounty("Unknown");
           setGeoStatus('error');
-        }
-      }, 50); // 50ms de retraso
+        }, {
+          timeout: 15000,
+          enableHighAccuracy: true
+        });
+      } else {
+        setGeoError("Geolocation is not supported by this browser.");
+        setAutoCounty("Unknown");
+        setGeoStatus('error');
+      }
+    };
 
-      return () => clearTimeout(timer); // Limpiar el temporizador si el componente se desmonta
+    if (county === "auto" && geoStatus === 'pending') {
+      if (navigator.permissions && navigator.permissions.query) {
+        navigator.permissions.query({ name: 'geolocation' }).then(permissionStatus => {
+          if (permissionStatus.state === 'granted' || permissionStatus.state === 'prompt') {
+            requestGeolocation();
+          } else if (permissionStatus.state === 'denied') {
+            setGeoError("Geolocation permission has been denied. To use this feature, please enable location services for this site in your browser settings.");
+            setAutoCounty("Unknown");
+            setGeoStatus('error');
+          }
+          permissionStatus.onchange = () => {
+            if(permissionStatus.state === 'granted') {
+              requestGeolocation();
+            }
+          };
+        });
+      } else {
+        // Fallback for browsers that don't support Permissions API
+        requestGeolocation();
+      }
     }
   }, [county, geoStatus]);
 
