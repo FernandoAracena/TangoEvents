@@ -15,7 +15,8 @@ const Navbar: React.FC = () => {
       setLoginOpen(false);
       setError(null);
     } catch (e: any) {
-      setError(e.message || 'Login failed');
+      // Re-throw the error so the modal can catch it and display it
+      throw e;
     }
   };
   const handleRegister = async (email: string, password: string) => {
