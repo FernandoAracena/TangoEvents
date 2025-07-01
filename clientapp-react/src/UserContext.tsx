@@ -33,7 +33,15 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password })
     });
-    if (!res.ok) throw new Error('Login failed');
+    if (!res.ok) {
+        let msg = 'Login failed';
+        try {
+            const data = await res.json();
+            // Assuming the error response for login is a simple string or has a message property
+            msg = data.message || data.title || (typeof data === 'string' ? data : 'Invalid credentials');
+        } catch {}
+        throw new Error(msg);
+    }
     const data = await res.json();
     setToken(data.token);
     setUser({ email: data.email });
