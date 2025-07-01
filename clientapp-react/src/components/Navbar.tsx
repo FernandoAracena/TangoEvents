@@ -23,7 +23,8 @@ const Navbar: React.FC = () => {
       await register(email, password);
       setRegisterOpen(false);
     } catch (e: any) {
-      // No setError aquí, el error se maneja en RegisterModal
+      // Re-throw the error so the modal can catch it and display it
+      throw e;
     }
   };
   const handleLogout = () => {

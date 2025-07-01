@@ -4,7 +4,7 @@ import Modal from './components/Modal';
 interface RegisterModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onRegister: (email: string, password: string) => Promise<void>;
+  onRegister: (email: string, password: string) => Promise<any>; // Allow promise to resolve with error data
 }
 
 const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onRegister }) => {
@@ -34,8 +34,9 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onRegist
       setError('');
       onClose();
     } catch (err: any) {
-      setError(err.message || 'Registration failed');
-      // No cerrar el modal si hay error
+        // The error is now passed by the caller, which handles the API logic.
+        // We just need to display it.
+        setError(err.message || 'Registration failed');
     } finally {
       setLoading(false);
     }
