@@ -209,28 +209,7 @@ const EventsList: React.FC = () => {
   if (county === "auto" && geoStatus === 'pending') {
     return (
       <div className="flex flex-col items-center justify-center min-h-[40vh] text-tangoBlue">
-        <div className="mb-2">Detecting your location to show nearby events...</div>
-        <button
-          className="bg-tangoBlue text-white px-4 py-2 rounded hover:bg-tangoGold transition"
-          onClick={() => {
-            setGeoStatus('pending');
-            setAutoCounty("");
-            // Forzar reintento
-            if (navigator.geolocation) {
-              navigator.geolocation.getCurrentPosition(async (pos) => {
-                const c = await getCountyFromPosition(pos.coords.latitude, pos.coords.longitude);
-                setAutoCounty(c);
-                setGeoStatus('success');
-              }, () => {
-                setAutoCounty("Unknown");
-                setGeoStatus('error');
-              });
-            } else {
-              setAutoCounty("Unknown");
-              setGeoStatus('error');
-            }
-          }}
-        >Retry location</button>
+        <div className="mb-2">Please wait...</div>
       </div>
     );
   }
