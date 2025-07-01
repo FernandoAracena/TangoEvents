@@ -229,28 +229,8 @@ const EventsList: React.FC = () => {
         <button
           className="bg-tangoBlue text-white px-4 py-2 rounded hover:bg-tangoGold transition mb-2"
           onClick={() => {
+            setGeoError(null); // Limpiar error anterior
             setGeoStatus('pending');
-            setAutoCounty("");
-            setGeoError(null);
-            if (navigator.geolocation) {
-              navigator.geolocation.getCurrentPosition(async (pos) => {
-                const c = await getCountyFromPosition(pos.coords.latitude, pos.coords.longitude);
-                setAutoCounty(c);
-                setGeoStatus('success');
-              }, (err) => {
-                console.error("Geolocation error on retry:", err);
-                setGeoError(`Error ${err.code}: ${err.message}`);
-                setAutoCounty("Unknown");
-                setGeoStatus('error');
-              }, {
-                timeout: 15000, // 15 segundos de timeout
-                enableHighAccuracy: true
-              });
-            } else {
-              setGeoError("Geolocation is not supported by this browser.");
-              setAutoCounty("Unknown");
-              setGeoStatus('error');
-            }
           }}
         >Retry location</button>
         <div className="mt-2">
