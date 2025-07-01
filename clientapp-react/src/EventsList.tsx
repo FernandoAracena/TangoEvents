@@ -191,26 +191,31 @@ const EventsList: React.FC = () => {
   // Reemplazar el useEffect de geolocalización:
   useEffect(() => {
     if (county === "auto" && geoStatus === 'pending') {
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(async (pos) => {
-          const c = await getCountyFromPosition(pos.coords.latitude, pos.coords.longitude);
-          setAutoCounty(c);
-          setGeoStatus('success');
-          setGeoError(null);
-        }, (err) => {
-          console.error("Geolocation error:", err);
-          setGeoError(`Error ${err.code}: ${err.message}`);
+      // Añadir un pequeño retraso para evitar race conditions con el prompt del navegador
+      const timer = setTimeout(() => {
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(async (pos) => {
+            const c = await getCountyFromPosition(pos.coords.latitude, pos.coords.longitude);
+            setAutoCounty(c);
+            setGeoStatus('success');
+            setGeoError(null);
+          }, (err) => {
+            console.error("Geolocation error:", err);
+            setGeoError(`Error ${err.code}: ${err.message}`);
+            setAutoCounty("Unknown");
+            setGeoStatus('error');
+          }, {
+            timeout: 15000, // 15 segundos de timeout
+            enableHighAccuracy: true
+          });
+        } else {
+          setGeoError("Geolocation is not supported by this browser.");
           setAutoCounty("Unknown");
           setGeoStatus('error');
-        }, {
-          timeout: 15000, // 15 segundos de timeout
-          enableHighAccuracy: true
-        });
-      } else {
-        setGeoError("Geolocation is not supported by this browser.");
-        setAutoCounty("Unknown");
-        setGeoStatus('error');
-      }
+        }
+      }, 50); // 50ms de retraso
+
+      return () => clearTimeout(timer); // Limpiar el temporizador si el componente se desmonta
     }
   }, [county, geoStatus]);
 
