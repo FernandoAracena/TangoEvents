@@ -89,41 +89,30 @@ const EventsList: React.FC = () => {
   const [eventToEdit, setEventToEdit] = useState<Event | null>(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [eventIdToDelete, setEventIdToDelete] = useState<number|null>(null);
-  const [geoStatus, setGeoStatus] = useState<'pending'|'success'|'error'>('success');
-  const [geoError, setGeoError] = useState<string | null>(null);
   const { user, token } = useUser();
 
   useEffect(() => {
     const requestGeolocation = () => {
       if (navigator.geolocation) {
-        setGeoStatus('pending');
         navigator.geolocation.getCurrentPosition(async (pos) => {
           const c = await getCountyFromPosition(pos.coords.latitude, pos.coords.longitude);
           setAutoCounty(c);
-          setGeoStatus('success');
-          setGeoError(null);
         }, (err) => {
           console.error("Geolocation error:", err);
-          let message = `Error ${err.code}: ${err.message}`;
-          if (err.code === 1) { // PERMISSION_DENIED
-            message = "Geolocation permission denied. To use this feature, please enable location services for this site in your browser settings.";
-          }
-          setGeoError(message);
-          setAutoCounty("Unknown");
-          setGeoStatus('error');
-        }, {
-          timeout: 15000,
-          enableHighAccuracy: true
+          // Si hay un error, simplemente no filtraremos por condado automáticamente
+          setAutoCounty(""); // O podrías establecer un valor predeterminado como 'Oslo'
         });
       } else {
-        setGeoError("Geolocation is not supported by this browser.");
-        setAutoCounty("Unknown");
-        setGeoStatus('error');
+        console.log("Geolocation is not supported by this browser.");
+        setAutoCounty("");
       }
     };
 
     if (county === "auto") {
       requestGeolocation();
+    } else {
+      // Si el usuario no selecciona 'auto', nos aseguramos de que autoCounty esté vacío
+      setAutoCounty("");
     }
   }, [county]);
 
@@ -214,36 +203,6 @@ const EventsList: React.FC = () => {
     }
   };
 
-  if (county === "auto" && geoStatus === 'pending') {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-[40vh] text-tangoBlue">
-        <div className="mb-2">We are charging Tango Events in your area. Please wait...</div>
-      </div>
-    );
-  }
-  if (county === "auto" && geoStatus === 'error') {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-[40vh] text-tangoBlue text-center px-4">
-        <div className="mb-2 font-semibold">Could not detect your location.</div>
-        <div className="mb-4 text-sm text-red-600">{geoError || "Please allow location access or select your county manually."}</div>
-        <button
-          className="bg-tangoBlue text-white px-4 py-2 rounded hover:bg-tangoGold transition mb-2"
-          onClick={() => setCounty('auto')}
-        >Retry location</button>
-        <div className="mt-2">
-          <span className="font-semibold">Or select county manually:</span>
-          <select
-            className="border rounded px-2 py-1 text-tangoBlue focus:outline-none focus:ring-2 focus:ring-tangoGold ml-2"
-            value={county}
-            onChange={e => setCounty(e.target.value)}
-          >
-            <option value="All">All</option>
-            {COUNTIES.map(c => <option key={c} value={c}>{c}</option>)}
-          </select>
-        </div>
-      </div>
-    );
-  }
   if (loading) return <div>Cargando eventos...</div>;
   if (error) return <div style={{ color: 'red' }}>Error: {error}</div>;
 
