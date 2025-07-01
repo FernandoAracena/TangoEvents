@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import './index.css';
 import App from './App';
 import EventsList from './EventsList';
@@ -14,14 +14,14 @@ const root = ReactDOM.createRoot(
 root.render(
   <React.StrictMode>
     <UserProvider>
-      <Router>
-        <App> 
-          <Routes>
-            <Route path="/" element={<EventsList />} />
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<App />}>
+            <Route index element={<EventsList />} />
             <Route path="*" element={<NotFound />} />
-          </Routes>
-        </App>
-      </Router>
+          </Route>
+        </Routes>
+      </BrowserRouter>
     </UserProvider>
   </React.StrictMode>
 );
