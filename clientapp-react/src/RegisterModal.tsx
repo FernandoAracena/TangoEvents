@@ -25,6 +25,7 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onRegist
       return;
     }
     setLoading(true);
+    setError('');
     try {
       await onRegister(email, password);
       setEmail('');
@@ -34,6 +35,7 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onRegist
       onClose();
     } catch (err: any) {
       setError(err.message || 'Registration failed');
+      // No cerrar el modal si hay error
     } finally {
       setLoading(false);
     }
