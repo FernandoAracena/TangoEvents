@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import CreateEventModalWrapper from './components/CreateEventModalWrapper';
 import EditEventModal from './components/EditEventModal';
 import Modal from './components/Modal';
+import GeoPermissionModal from './components/GeoPermissionModal';
 import { useUser } from './UserContext';
 
 interface Event {
@@ -89,20 +90,15 @@ const EventsList: React.FC = () => {
   const [eventToEdit, setEventToEdit] = useState<Event | null>(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [eventIdToDelete, setEventIdToDelete] = useState<number|null>(null);
+  const [geoStatus, setGeoStatus] = useState<'pending'|'success'|'error'|null>(null);
+  const [showGeoModal, setShowGeoModal] = useState(false);
   const { user, token } = useUser();
 
   useEffect(() => {
-    if (county === "auto") {
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(async (pos) => {
-          const c = await getCountyFromPosition(pos.coords.latitude, pos.coords.longitude);
-          setAutoCounty(c);
-        }, () => setAutoCounty("Unknown"));
-      } else {
-        setAutoCounty("Unknown");
-      }
+    if (county === "auto" && geoStatus === null) {
+      setShowGeoModal(true);
     }
-  }, [county]);
+  }, [county, geoStatus]);
 
   useEffect(() => {
     const apiBase = process.env.REACT_APP_API_URL || 'http://localhost:8080';
@@ -191,6 +187,91 @@ const EventsList: React.FC = () => {
     }
   };
 
+  // Reemplazar el useEffect de geolocalización:
+  useEffect(() => {
+    if (county === "auto" && geoStatus === 'pending') {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(async (pos) => {
+          const c = await getCountyFromPosition(pos.coords.latitude, pos.coords.longitude);
+          setAutoCounty(c);
+          setGeoStatus('success');
+        }, () => {
+          setAutoCounty("Unknown");
+          setGeoStatus('error');
+        });
+      } else {
+        setAutoCounty("Unknown");
+        setGeoStatus('error');
+      }
+    }
+  }, [county, geoStatus]);
+
+  if (county === "auto" && geoStatus === 'pending') {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[40vh] text-tangoBlue">
+        <div className="mb-2">Detecting your location to show nearby events...</div>
+        <button
+          className="bg-tangoBlue text-white px-4 py-2 rounded hover:bg-tangoGold transition"
+          onClick={() => {
+            setGeoStatus('pending');
+            setAutoCounty("");
+            // Forzar reintento
+            if (navigator.geolocation) {
+              navigator.geolocation.getCurrentPosition(async (pos) => {
+                const c = await getCountyFromPosition(pos.coords.latitude, pos.coords.longitude);
+                setAutoCounty(c);
+                setGeoStatus('success');
+              }, () => {
+                setAutoCounty("Unknown");
+                setGeoStatus('error');
+              });
+            } else {
+              setAutoCounty("Unknown");
+              setGeoStatus('error');
+            }
+          }}
+        >Retry location</button>
+      </div>
+    );
+  }
+  if (county === "auto" && geoStatus === 'error') {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[40vh] text-tangoBlue">
+        <div className="mb-2">Could not detect your location. Please allow location access or select your county manually.</div>
+        <button
+          className="bg-tangoBlue text-white px-4 py-2 rounded hover:bg-tangoGold transition mb-2"
+          onClick={() => {
+            setGeoStatus('pending');
+            setAutoCounty("");
+            if (navigator.geolocation) {
+              navigator.geolocation.getCurrentPosition(async (pos) => {
+                const c = await getCountyFromPosition(pos.coords.latitude, pos.coords.longitude);
+                setAutoCounty(c);
+                setGeoStatus('success');
+              }, () => {
+                setAutoCounty("Unknown");
+                setGeoStatus('error');
+              });
+            } else {
+              setAutoCounty("Unknown");
+              setGeoStatus('error');
+            }
+          }}
+        >Retry location</button>
+        <div className="mt-2">
+          <span className="font-semibold">Or select county manually:</span>
+          <select
+            className="border rounded px-2 py-1 text-tangoBlue focus:outline-none focus:ring-2 focus:ring-tangoGold ml-2"
+            value={county}
+            onChange={e => setCounty(e.target.value)}
+          >
+            <option value="All">All</option>
+            {COUNTIES.map(c => <option key={c} value={c}>{c}</option>)}
+          </select>
+        </div>
+      </div>
+    );
+  }
   if (loading) return <div>Cargando eventos...</div>;
   if (error) return <div style={{ color: 'red' }}>Error: {error}</div>;
 
@@ -389,6 +470,19 @@ const EventsList: React.FC = () => {
           <button onClick={() => setShowDeleteModal(false)} className="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400">Cancel</button>
         </div>
       </Modal>
+
+      {/* Modal de permisos de geolocalización */}
+      <GeoPermissionModal
+        isOpen={showGeoModal}
+        onAccept={() => {
+          setShowGeoModal(false);
+          setGeoStatus('pending'); // Dispara el useEffect de geolocalización
+        }}
+        onReject={() => {
+          setShowGeoModal(false);
+          setCounty('All'); // Cambia a selector manual
+        }}
+      />
     </div>
   );
 };
