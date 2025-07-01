@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import CreateEventModalWrapper from './components/CreateEventModalWrapper';
 import EditEventModal from './components/EditEventModal';
 import Modal from './components/Modal';
-import GeoPermissionModal from './components/GeoPermissionModal';
 import { useUser } from './UserContext';
 
 interface Event {
@@ -90,16 +89,43 @@ const EventsList: React.FC = () => {
   const [eventToEdit, setEventToEdit] = useState<Event | null>(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [eventIdToDelete, setEventIdToDelete] = useState<number|null>(null);
-  const [geoStatus, setGeoStatus] = useState<'pending'|'success'|'error'|'idle'>('idle');
+  const [geoStatus, setGeoStatus] = useState<'pending'|'success'|'error'>('success');
   const [geoError, setGeoError] = useState<string | null>(null);
-  const [showGeoModal, setShowGeoModal] = useState(false);
   const { user, token } = useUser();
 
   useEffect(() => {
-    if (county === "auto" && geoStatus === 'idle') {
-      setShowGeoModal(true);
+    const requestGeolocation = () => {
+      if (navigator.geolocation) {
+        setGeoStatus('pending');
+        navigator.geolocation.getCurrentPosition(async (pos) => {
+          const c = await getCountyFromPosition(pos.coords.latitude, pos.coords.longitude);
+          setAutoCounty(c);
+          setGeoStatus('success');
+          setGeoError(null);
+        }, (err) => {
+          console.error("Geolocation error:", err);
+          let message = `Error ${err.code}: ${err.message}`;
+          if (err.code === 1) { // PERMISSION_DENIED
+            message = "Geolocation permission denied. To use this feature, please enable location services for this site in your browser settings.";
+          }
+          setGeoError(message);
+          setAutoCounty("Unknown");
+          setGeoStatus('error');
+        }, {
+          timeout: 15000,
+          enableHighAccuracy: true
+        });
+      } else {
+        setGeoError("Geolocation is not supported by this browser.");
+        setAutoCounty("Unknown");
+        setGeoStatus('error');
+      }
+    };
+
+    if (county === "auto") {
+      requestGeolocation();
     }
-  }, [county, geoStatus]);
+  }, [county]);
 
   useEffect(() => {
     const apiBase = process.env.REACT_APP_API_URL || 'http://localhost:8080';
@@ -188,56 +214,6 @@ const EventsList: React.FC = () => {
     }
   };
 
-  const handleRequestGeolocation = () => {
-    setShowGeoModal(false);
-    setGeoStatus('pending');
-    setGeoError(null);
-
-    if (!navigator.geolocation) {
-      setGeoError("Geolocation is not supported by this browser.");
-      setAutoCounty("Unknown");
-      setGeoStatus('error');
-      return;
-    }
-
-    const requestLocation = () => {
-      navigator.geolocation.getCurrentPosition(async (pos) => {
-        const c = await getCountyFromPosition(pos.coords.latitude, pos.coords.longitude);
-        setAutoCounty(c);
-        setGeoStatus('success');
-        setGeoError(null);
-      }, (err) => {
-        console.error("Geolocation error:", err);
-        let message = `Error ${err.code}: ${err.message}`;
-        if (err.code === 1) { // PERMISSION_DENIED
-          message = "Geolocation permission denied. To use this feature, please enable location services for this site in your browser settings.";
-        }
-        setGeoError(message);
-        setAutoCounty("Unknown");
-        setGeoStatus('error');
-      }, {
-        timeout: 15000,
-        enableHighAccuracy: true
-      });
-    };
-
-    if (navigator.permissions && navigator.permissions.query) {
-      navigator.permissions.query({ name: 'geolocation' }).then(permissionStatus => {
-        if (permissionStatus.state === 'granted' || permissionStatus.state === 'prompt') {
-          requestLocation();
-        } else if (permissionStatus.state === 'denied') {
-          setGeoError("Geolocation permission has been denied. To use this feature, please enable location services for this site in your browser settings.");
-          setAutoCounty("Unknown");
-          setGeoStatus('error');
-        }
-      });
-    } else {
-      // Fallback for browsers that don't support Permissions API
-      requestLocation();
-    }
-  };
-
-
   if (county === "auto" && geoStatus === 'pending') {
     return (
       <div className="flex flex-col items-center justify-center min-h-[40vh] text-tangoBlue">
@@ -252,7 +228,7 @@ const EventsList: React.FC = () => {
         <div className="mb-4 text-sm text-red-600">{geoError || "Please allow location access or select your county manually."}</div>
         <button
           className="bg-tangoBlue text-white px-4 py-2 rounded hover:bg-tangoGold transition mb-2"
-          onClick={handleRequestGeolocation}
+          onClick={() => setCounty('auto')}
         >Retry location</button>
         <div className="mt-2">
           <span className="font-semibold">Or select county manually:</span>
@@ -487,16 +463,6 @@ const EventsList: React.FC = () => {
         </div>
       </Modal>
 
-      {/* Modal de permisos de geolocalización */}
-      <GeoPermissionModal
-        isOpen={showGeoModal}
-        onAccept={handleRequestGeolocation}
-        onReject={() => {
-          setShowGeoModal(false);
-          setCounty('All'); // Cambia a selector manual
-          setGeoStatus('success'); // Evita que el modal reaparezca
-        }}
-      />
     </div>
   );
 };
