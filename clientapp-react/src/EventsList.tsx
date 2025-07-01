@@ -91,6 +91,7 @@ const EventsList: React.FC = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [eventIdToDelete, setEventIdToDelete] = useState<number|null>(null);
   const [geoStatus, setGeoStatus] = useState<'pending'|'success'|'error'|null>(null);
+  const [geoError, setGeoError] = useState<string | null>(null);
   const [showGeoModal, setShowGeoModal] = useState(false);
   const { user, token } = useUser();
 
@@ -195,14 +196,18 @@ const EventsList: React.FC = () => {
           const c = await getCountyFromPosition(pos.coords.latitude, pos.coords.longitude);
           setAutoCounty(c);
           setGeoStatus('success');
+          setGeoError(null);
         }, (err) => {
           console.error("Geolocation error:", err);
+          setGeoError(`Error ${err.code}: ${err.message}`);
           setAutoCounty("Unknown");
           setGeoStatus('error');
         }, {
-          timeout: 10000 // 10 segundos de timeout
+          timeout: 15000, // 15 segundos de timeout
+          enableHighAccuracy: true
         });
       } else {
+        setGeoError("Geolocation is not supported by this browser.");
         setAutoCounty("Unknown");
         setGeoStatus('error');
       }
@@ -218,13 +223,15 @@ const EventsList: React.FC = () => {
   }
   if (county === "auto" && geoStatus === 'error') {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[40vh] text-tangoBlue">
-        <div className="mb-2">Could not detect your location. Please allow location access or select your county manually.</div>
+      <div className="flex flex-col items-center justify-center min-h-[40vh] text-tangoBlue text-center px-4">
+        <div className="mb-2 font-semibold">Could not detect your location.</div>
+        <div className="mb-4 text-sm text-red-600">{geoError || "Please allow location access or select your county manually."}</div>
         <button
           className="bg-tangoBlue text-white px-4 py-2 rounded hover:bg-tangoGold transition mb-2"
           onClick={() => {
             setGeoStatus('pending');
             setAutoCounty("");
+            setGeoError(null);
             if (navigator.geolocation) {
               navigator.geolocation.getCurrentPosition(async (pos) => {
                 const c = await getCountyFromPosition(pos.coords.latitude, pos.coords.longitude);
@@ -232,12 +239,15 @@ const EventsList: React.FC = () => {
                 setGeoStatus('success');
               }, (err) => {
                 console.error("Geolocation error on retry:", err);
+                setGeoError(`Error ${err.code}: ${err.message}`);
                 setAutoCounty("Unknown");
                 setGeoStatus('error');
               }, {
-                timeout: 10000 // 10 segundos de timeout
+                timeout: 15000, // 15 segundos de timeout
+                enableHighAccuracy: true
               });
             } else {
+              setGeoError("Geolocation is not supported by this browser.");
               setAutoCounty("Unknown");
               setGeoStatus('error');
             }
