@@ -209,7 +209,7 @@ const EventsList: React.FC = () => {
   if (county === "auto" && geoStatus === 'pending') {
     return (
       <div className="flex flex-col items-center justify-center min-h-[40vh] text-tangoBlue">
-        <div className="mb-2">Please wait...</div>
+        <div className="mb-2">We are charging Tango Events in your area. Please wait...</div>
       </div>
     );
   }

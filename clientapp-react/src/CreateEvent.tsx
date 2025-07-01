@@ -5,7 +5,6 @@ import CustomDatePicker from './components/CustomDatePicker';
 import MultiDatePicker from './components/MultiDatePicker';
 import RepetitionDatePicker from './components/RepetitionDatePicker';
 import { useUser } from './UserContext';
-import CountySelector from './components/CountySelector';
 
 const initialState = {
   eventName: '',
@@ -20,7 +19,6 @@ const initialState = {
   price: '',
   eventLink: '',
   city: '',
-  county: '',
 };
 
 interface CreateEventProps {
@@ -35,9 +33,6 @@ const CreateEvent: React.FC<CreateEventProps> = ({ onSuccess }) => {
   const [repeatOption, setRepeatOption] = useState('none');
   const [multiDates, setMultiDates] = useState<string[]>([]);
   const [repeatUntil, setRepeatUntil] = useState('');
-  const [county, setCounty] = useState('');
-  const [locationStatus, setLocationStatus] = useState<'pending'|'success'|'error'>('pending');
-  const [locationError, setLocationError] = useState('');
   const { user, token } = useUser();
 
   const handleChange = (
@@ -138,54 +133,12 @@ const CreateEvent: React.FC<CreateEventProps> = ({ onSuccess }) => {
     CreatedBy: e.CreatedBy
   });
 
-  React.useEffect(() => {
-    // Pedir ubicación al abrir el formulario
-    if (!county) {
-      if (!navigator.geolocation) {
-        setLocationStatus('error');
-        setLocationError('Geolocation is not supported by your browser.');
-        return;
-      }
-      setLocationStatus('pending');
-      navigator.geolocation.getCurrentPosition(
-        async (pos) => {
-          // Llamar al backend para obtener el county a partir de lat/lng
-          try {
-            const apiBase = process.env.REACT_APP_API_URL || 'http://localhost:8080';
-            const res = await fetch(`${apiBase}/api/EventsApi/county?lat=${pos.coords.latitude}&lng=${pos.coords.longitude}`);
-            if (!res.ok) throw new Error('Failed to get county');
-            const data = await res.json();
-            if (data && data.county) {
-              setCounty(data.county);
-              setLocationStatus('success');
-            } else {
-              setLocationStatus('error');
-              setLocationError('Could not determine your county. Please select manually.');
-            }
-          } catch {
-            setLocationStatus('error');
-            setLocationError('Could not determine your county. Please select manually.');
-          }
-        },
-        (err) => {
-          setLocationStatus('error');
-          setLocationError('Location permission denied or unavailable. Please select your county manually.');
-        },
-        { enableHighAccuracy: true, timeout: 10000 }
-      );
-    }
-  }, [county]);
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
     setSuccess(false);
     if (!user) {
       setError('You must be logged in to create an event.');
-      return;
-    }
-    if (!county) {
-      setError('Please select your county.');
       return;
     }
     if (!validateDateTime()) return;
@@ -224,9 +177,9 @@ const CreateEvent: React.FC<CreateEventProps> = ({ onSuccess }) => {
       // Si hay varias fechas, crear un array de eventos, si no, solo uno
       let payload;
       if (form.typeEvent !== 'Course' && datesToSend.length > 0) {
-        payload = datesToSend.map(date => toPascalCaseEvent({ ...form, date, CreatedBy: user.email, county }));
+        payload = datesToSend.map(date => toPascalCaseEvent({ ...form, date, CreatedBy: user.email }));
       } else {
-        payload = toPascalCaseEvent({ ...form, CreatedBy: user.email, county });
+        payload = toPascalCaseEvent({ ...form, CreatedBy: user.email });
       }
       const res = await fetch(`${apiBase}/api/EventsApi`, {
         method: 'POST',
@@ -327,17 +280,9 @@ const CreateEvent: React.FC<CreateEventProps> = ({ onSuccess }) => {
         <input name="price" value={form.price} onChange={handleChange} placeholder="Price" className="input" required />
         <input name="eventLink" value={form.eventLink} onChange={handleChange} placeholder="Event Link" className="input" required />
         <input name="city" value={form.city} onChange={handleChange} placeholder="City" className="input" required />
-        {/* County logic */}
-        {locationStatus === 'pending' && (
-          <div className="text-blue-600 text-sm">Detecting your location...</div>
-        )}
-        {locationStatus === 'error' && (
-          <div className="text-red-600 text-sm mb-1">{locationError} <button type="button" className="underline" onClick={()=>{setCounty('');setLocationStatus('pending');setLocationError('');}}>Retry</button></div>
-        )}
-        <CountySelector value={county} onChange={setCounty} disabled={locationStatus==='pending'} />
         {error && <div className="text-red-600 mb-2">{error}</div>}
         {success && <div className="text-green-700 mb-2">Event created successfully!</div>}
-        <button type="submit" className="bg-tangoBlue text-white py-2 rounded hover:bg-tangoGold transition" disabled={loading || locationStatus==='pending'}>
+        <button type="submit" className="bg-tangoBlue text-white py-2 rounded hover:bg-tangoGold transition" disabled={loading}>
           {loading ? 'Saving...' : 'Create Event'}
         </button>
       </form>
