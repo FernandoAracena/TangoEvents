@@ -1,3 +1,6 @@
+// This file is deprecated. Routing is now handled in index.js and App.tsx.
+// Do not use this file. It is kept only for reference and should be deleted in the future.
+
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import EventsList from './EventsList';

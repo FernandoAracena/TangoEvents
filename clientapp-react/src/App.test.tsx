@@ -1,9 +1,17 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
+import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import App from './App';
 
-test('renders learn react link', () => {
-  render(<App><div>Test</div></App>);
-  // const linkElement = screen.getByText(/learn react/i);
-  // expect(linkElement).toBeInTheDocument();
+test('renders App layout and child route', () => {
+  render(
+    <MemoryRouter initialEntries={['/']}>
+      <Routes>
+        <Route path="/" element={<App />}>
+          <Route index element={<div>Test</div>} />
+        </Route>
+      </Routes>
+    </MemoryRouter>
+  );
+  expect(screen.getByText('Test')).toBeInTheDocument();
 });
