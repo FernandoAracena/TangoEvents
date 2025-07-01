@@ -195,9 +195,12 @@ const EventsList: React.FC = () => {
           const c = await getCountyFromPosition(pos.coords.latitude, pos.coords.longitude);
           setAutoCounty(c);
           setGeoStatus('success');
-        }, () => {
+        }, (err) => {
+          console.error("Geolocation error:", err);
           setAutoCounty("Unknown");
           setGeoStatus('error');
+        }, {
+          timeout: 10000 // 10 segundos de timeout
         });
       } else {
         setAutoCounty("Unknown");
@@ -227,9 +230,12 @@ const EventsList: React.FC = () => {
                 const c = await getCountyFromPosition(pos.coords.latitude, pos.coords.longitude);
                 setAutoCounty(c);
                 setGeoStatus('success');
-              }, () => {
+              }, (err) => {
+                console.error("Geolocation error on retry:", err);
                 setAutoCounty("Unknown");
                 setGeoStatus('error');
+              }, {
+                timeout: 10000 // 10 segundos de timeout
               });
             } else {
               setAutoCounty("Unknown");
