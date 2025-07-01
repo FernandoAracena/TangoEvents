@@ -19,7 +19,6 @@ COPY Helpers/ ./Helpers/
 COPY Migrations/ ./Migrations/
 COPY Models/ ./Models/
 COPY Properties/ ./Properties/
-COPY Views/ ./Views/
 COPY wwwroot/ ./wwwroot/
 COPY Program.cs ./
 RUN dotnet restore
