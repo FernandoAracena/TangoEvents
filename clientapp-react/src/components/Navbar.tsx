@@ -22,9 +22,8 @@ const Navbar: React.FC = () => {
     try {
       await register(email, password);
       setRegisterOpen(false);
-      setError(null);
     } catch (e: any) {
-      setError(e.message || 'Registration failed');
+      // No setError aquí, el error se maneja en RegisterModal
     }
   };
   const handleLogout = () => {
@@ -72,7 +71,6 @@ const Navbar: React.FC = () => {
       </div>
       <LoginModal isOpen={loginOpen} onClose={() => setLoginOpen(false)} onLogin={handleLogin} />
       <RegisterModal isOpen={registerOpen} onClose={() => setRegisterOpen(false)} onRegister={handleRegister} />
-      {error && <div className="text-red-500 text-xs absolute top-2 right-2">{error}</div>}
     </nav>
   );
 };
