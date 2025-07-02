@@ -148,7 +148,12 @@ const EventsList: React.FC = () => {
   const grouped = groupEventsByDate(filteredEvents);
 
   // Detectar ciudad para el título
-  const detectedCity = county === "auto" && autoCounty ? autoCounty : county;
+  let cityLabel = 'Norway';
+  if (county === 'auto') {
+    cityLabel = autoCounty && autoCounty !== 'All' ? autoCounty : 'Detecting location...';
+  } else if (county && county !== 'All') {
+    cityLabel = county;
+  }
 
   const handleDelete = async (eventId: number) => {
     if (!token) return;
@@ -203,12 +208,12 @@ const EventsList: React.FC = () => {
     }
   };
 
-  if (loading) return <div>Cargando eventos...</div>;
+  if (loading) return <div>Loading events...</div>;
   if (error) return <div style={{ color: 'red' }}>Error: {error}</div>;
 
   return (
     <div className="max-w-4xl mx-auto pt-2 pb-4 px-2">
-      <div className="flex justify-end mb-2">
+      <div className="flex justify-end mb-1">{/* mb-1 para menos espacio */}
         {user && (
           <button
             className="bg-tangoBlue text-white px-3 py-1 rounded hover:bg-tangoGold transition text-sm"
@@ -220,7 +225,7 @@ const EventsList: React.FC = () => {
       </div>
       <h2 className="text-base font-semibold mb-1 text-center text-tangoBlue">
         Tango Events in: {" "}
-        <span className="text-tangoGreen-dark">{detectedCity && detectedCity !== 'All' ? detectedCity : 'Norway'}</span>
+        <span className="text-tangoGreen-dark">{cityLabel}</span>
       </h2>
       <div className="mb-2 flex flex-row gap-1 justify-center overflow-x-auto md:flex-row md:items-center md:gap-2">
         <div className="flex flex-col w-1/2 min-w-[90px] md:w-auto md:min-w-[120px]">
