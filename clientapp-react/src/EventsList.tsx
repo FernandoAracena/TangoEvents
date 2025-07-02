@@ -154,9 +154,14 @@ const EventsList: React.FC = () => {
     }
   }, [county]);
 
+  // Solo pedir eventos cuando hay county válido
   useEffect(() => {
-    fetchEvents();
-  }, [fetchEvents]);
+    if (county !== "auto" || (county === "auto" && autoCounty)) {
+      fetchEvents();
+    } else {
+      console.log("Esperando county válido para pedir eventos...");
+    }
+  }, [fetchEvents, county, autoCounty]);
 
   // Filtrar eventos por grupo
   const filteredEvents = events.filter(e => {
