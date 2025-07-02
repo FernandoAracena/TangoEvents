@@ -243,7 +243,7 @@ const EventsList: React.FC = () => {
         )}
       </div>
       {/* Compact block for title and filters with reduced margin */}
-      <div className="mt-2 mb-3">
+      <div className="mt-0 mb-3">
         <h2 className="text-base font-semibold mb-1 text-center text-tangoBlue">
           Tango Events in: {" "}
           <span className="text-tangoGreen-dark">{cityLabel}</span>
