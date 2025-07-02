@@ -226,7 +226,7 @@ const EventsList: React.FC = () => {
   return (
     <div className="max-w-4xl mx-auto pb-4 px-2">
       {user && (
-        <div className="flex justify-end">
+        <div className="flex justify-end mb-0"> {/* Solo muestra el contenedor si hay usuario */}
           <button
             className="bg-tangoBlue text-white px-3 py-1 rounded hover:bg-tangoGold transition text-sm"
             onClick={() => setShowCreateModal(true)}
