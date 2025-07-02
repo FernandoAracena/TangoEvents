@@ -132,6 +132,8 @@ const EventsList: React.FC = () => {
           setGeolocationError("Could not automatically detect your location. Please select a county from the list.");
           setAutoCounty("");
           setError(null);
+          // Si el usuario no ha cambiado el county manualmente, forzar a 'All' para evitar bloqueo
+          setCounty((prev) => prev === "auto" ? "All" : prev);
         }, {
           enableHighAccuracy: false,
           timeout: 10000,
