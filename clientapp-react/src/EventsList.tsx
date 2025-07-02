@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import CreateEventModalWrapper from './components/CreateEventModalWrapper';
 import EditEventModal from './components/EditEventModal';
 import Modal from './components/Modal';
@@ -81,8 +81,9 @@ const EventsList: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
-  const [county, setCounty] = useState<string>("auto"); // Cambiado de 'All' a 'auto'
+  const [county, setCounty] = useState<string>("auto");
   const [autoCounty, setAutoCounty] = useState<string>("");
+  const [geolocationError, setGeolocationError] = useState<string | null>(null);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [eventTypeGroup, setEventTypeGroup] = useState<string>('All');
   const [showEditModal, setShowEditModal] = useState(false);
@@ -91,37 +92,7 @@ const EventsList: React.FC = () => {
   const [eventIdToDelete, setEventIdToDelete] = useState<number|null>(null);
   const { user, token } = useUser();
 
-  useEffect(() => {
-    const requestGeolocation = () => {
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(async (pos) => {
-          const c = await getCountyFromPosition(pos.coords.latitude, pos.coords.longitude);
-          setAutoCounty(c);
-        }, (err) => {
-          console.error("Geolocation error:", err);
-          setError(`Geolocation error: ${err.message}`);
-          setAutoCounty("");
-        }, {
-          enableHighAccuracy: true,
-          timeout: 10000,
-          maximumAge: 0
-        });
-      } else {
-        console.log("Geolocation is not supported by this browser.");
-        setError("Geolocation is not supported by this browser.");
-        setAutoCounty("");
-      }
-    };
-
-    if (county === "auto") {
-      requestGeolocation();
-    } else {
-      // Si el usuario no selecciona 'auto', nos aseguramos de que autoCounty esté vacío
-      setAutoCounty("");
-    }
-  }, [county]);
-
-  useEffect(() => {
+  const fetchEvents = useCallback(() => {
     const apiBase = process.env.REACT_APP_API_URL || 'http://localhost:8080';
     let url = `${apiBase}/api/EventsApi?eventType=Events`;
     const selectedCounty = county === "auto" ? autoCounty : county;
@@ -129,9 +100,10 @@ const EventsList: React.FC = () => {
       url += `&county=${encodeURIComponent(selectedCounty)}`;
     }
     setLoading(true);
+    setError(null); // Reset error before fetching
     fetch(url)
       .then((res) => {
-        if (!res.ok) throw new Error('No se pudo obtener eventos');
+        if (!res.ok) throw new Error('Failed to fetch events. Please try again later.');
         return res.json();
       })
       .then((data) => {
@@ -144,6 +116,49 @@ const EventsList: React.FC = () => {
       });
   }, [county, autoCounty]);
 
+
+  useEffect(() => {
+    const requestGeolocation = () => {
+      // Clear previous errors and state when starting
+      setGeolocationError(null);
+      
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(async (pos) => {
+          const c = await getCountyFromPosition(pos.coords.latitude, pos.coords.longitude);
+          setAutoCounty(c);
+          setGeolocationError(null); // Clear error on success
+        }, (err) => {
+          console.error("Geolocation error:", err);
+          // Simplified, more general error message for better UX
+          setGeolocationError("Could not automatically detect your location. Please select a county from the list.");
+          setAutoCounty(""); // Fallback
+          setError(null); // This is not a fatal app error
+        }, {
+          enableHighAccuracy: false, // Set to false for better reliability on mobile
+          timeout: 10000, // Revert to 10-second timeout
+          maximumAge: 0
+        });
+      } else {
+        console.log("Geolocation is not supported by this browser.");
+        setGeolocationError("Geolocation is not supported. Please select a county manually.");
+        setAutoCounty("");
+        setError(null);
+      }
+    };
+
+    if (county === "auto") {
+      requestGeolocation();
+    } else {
+      // If user selects a county, clear any auto-county info
+      setAutoCounty("");
+      setGeolocationError(null);
+    }
+  }, [county]);
+
+  useEffect(() => {
+    fetchEvents();
+  }, [fetchEvents]);
+
   // Filtrar eventos por grupo
   const filteredEvents = events.filter(e => {
     if (eventTypeGroup === 'All') return true;
@@ -153,9 +168,13 @@ const EventsList: React.FC = () => {
   const grouped = groupEventsByDate(filteredEvents);
 
   // Detectar ciudad para el título
-  let cityLabel = 'Norway';
+  let cityLabel = 'All Norway'; // Default value
   if (county === 'auto') {
-    cityLabel = autoCounty && autoCounty !== 'All' ? autoCounty : 'Detecting location...';
+    if (geolocationError) {
+      cityLabel = 'All Norway'; // On error, show a sensible default
+    } else {
+      cityLabel = autoCounty ? autoCounty : 'Detecting location...';
+    }
   } else if (county && county !== 'All') {
     cityLabel = county;
   }
@@ -187,25 +206,7 @@ const EventsList: React.FC = () => {
       setShowDeleteModal(false);
       setEventIdToDelete(null);
       // Refrescar eventos tras eliminar
-      let url = `${apiBase}/api/EventsApi?eventType=Events`;
-      const selectedCounty = county === "auto" ? autoCounty : county;
-      if (selectedCounty && selectedCounty !== "All" && selectedCounty !== "") {
-        url += `&county=${encodeURIComponent(selectedCounty)}`;
-      }
-      setLoading(true);
-      fetch(url)
-        .then((res) => {
-          if (!res.ok) throw new Error('No se pudo obtener eventos');
-          return res.json();
-        })
-        .then((data) => {
-          setEvents(data);
-          setLoading(false);
-        })
-        .catch((err) => {
-          setError(err.message);
-          setLoading(false);
-        });
+      fetchEvents();
     } catch (err: any) {
       setError(err.message);
       setShowDeleteModal(false);
@@ -214,11 +215,11 @@ const EventsList: React.FC = () => {
   };
 
   if (loading) return <div>Loading events...</div>;
-  if (error) return <div style={{ color: 'red' }}>Error: {error}</div>;
+  if (error) return <div className="text-center text-red-500 p-4">{error}</div>;
 
   return (
-    <div className="max-w-4xl mx-auto pb-4 px-2"> {/* Removed pt-2 */}
-      <div className="flex justify-end mb-0">{/* mb-0 para eliminar espacio */}
+    <div className="max-w-4xl mx-auto pb-4 px-2">
+      <div className="flex justify-end">
         {user && (
           <button
             className="bg-tangoBlue text-white px-3 py-1 rounded hover:bg-tangoGold transition text-sm"
@@ -228,44 +229,57 @@ const EventsList: React.FC = () => {
           </button>
         )}
       </div>
-      <h2 className="text-base font-semibold mb-1 text-center text-tangoBlue">
-        Tango Events in: {" "}
-        <span className="text-tangoGreen-dark">{cityLabel}</span>
-      </h2>
-      <div className="mb-2 flex flex-row gap-1 justify-center overflow-x-auto md:flex-row md:items-center md:gap-2">
-        <div className="flex flex-col w-1/2 min-w-[90px] md:w-auto md:min-w-[120px]">
-          <select
-            className="border rounded px-1 py-0.5 text-xs text-tangoBlue focus:outline-none focus:ring-2 focus:ring-tangoGold w-full md:px-2 md:py-1 md:text-sm"
-            value={county}
-            onChange={e => setCounty(e.target.value)}
-            aria-label="County"
-          >
-            <option value="" disabled hidden>County</option>
-            <option value="All">All</option>
-            <option value="auto">Auto (Detect my county)</option>
-            {COUNTIES.map(c => <option key={c} value={c}>{c}</option>)}
-          </select>
-        </div>
-        <div className="flex flex-col w-1/2 min-w-[90px] md:w-auto md:min-w-[120px]">
-          <select
-            className="border rounded px-1 py-0.5 text-xs text-tangoBlue focus:outline-none focus:ring-2 focus:ring-tangoGold w-full md:px-2 md:py-1 md:text-sm"
-            value={eventTypeGroup}
-            onChange={e => setEventTypeGroup(e.target.value)}
-            aria-label="Type"
-          >
-            <option value="" disabled hidden>Type</option>
-            {EVENT_TYPE_GROUPS.map(group => (
-              <option key={group.label} value={group.label}>{group.label}</option>
-            ))}
-          </select>
+
+      {/* Centered block for title and filters with vertical margin */}
+      <div className="my-3">
+        <h2 className="text-base font-semibold mb-2 text-center text-tangoBlue">
+          Tango Events in: {" "}
+          <span className="text-tangoGreen-dark">{cityLabel}</span>
+        </h2>
+        <div className="flex flex-row gap-2 justify-center">
+          <div className="flex-1 min-w-[120px] max-w-[200px]">
+            <select
+              className="border rounded px-2 py-1 text-sm text-tangoBlue focus:outline-none focus:ring-2 focus:ring-tangoGold w-full"
+              value={county}
+              onChange={e => setCounty(e.target.value)}
+              aria-label="County"
+            >
+              <option value="" disabled hidden>County</option>
+              <option value="All">All</option>
+              <option value="auto">Auto (Detect my county)</option>
+              {COUNTIES.map(c => <option key={c} value={c}>{c}</option>)}
+            </select>
+          </div>
+          <div className="flex-1 min-w-[120px] max-w-[200px]">
+            <select
+              className="border rounded px-2 py-1 text-sm text-tangoBlue focus:outline-none focus:ring-2 focus:ring-tangoGold w-full"
+              value={eventTypeGroup}
+              onChange={e => setEventTypeGroup(e.target.value)}
+              aria-label="Type"
+            >
+              <option value="" disabled hidden>Type</option>
+              {EVENT_TYPE_GROUPS.map(group => (
+                <option key={group.label} value={group.label}>{group.label}</option>
+              ))}
+            </select>
+          </div>
         </div>
       </div>
-      {/* Mostrar mensaje si no hay eventos para el county seleccionado */}
-      {Object.keys(grouped).length === 0 && (
-        <div className="text-center text-tangoBlue font-semibold text-lg my-8">
-          No events found for the selected county.
+
+      {/* Display geolocation error if it exists */}
+      {geolocationError && county === 'auto' && (
+        <div className="text-center text-orange-600 bg-orange-100 border border-orange-300 rounded-md p-2 mb-4 text-sm">
+          {geolocationError}
         </div>
       )}
+
+      {/* Display message if no events are found */}
+      {Object.keys(grouped).length === 0 && !loading && (
+        <div className="text-center text-tangoBlue font-semibold text-lg my-8">
+          No events found for the selected area.
+        </div>
+      )}
+      
       {Object.keys(grouped).sort((a, b) => new Date(a).getTime() - new Date(b).getTime()).map(date => (
         <div key={date} className="mb-4">
           <h3 className="text-base font-semibold mb-2 text-tangoBlue border-b pb-0.5">{formatDateTitle(grouped[date][0].date)}</h3>
@@ -367,26 +381,7 @@ const EventsList: React.FC = () => {
             setShowEditModal(false);
             setSelectedEvent(null);
             // Refrescar eventos tras editar
-            const apiBase = process.env.REACT_APP_API_URL || 'http://localhost:8080';
-            let url = `${apiBase}/api/EventsApi?eventType=Events`;
-            const selectedCounty = county === "auto" ? autoCounty : county;
-            if (selectedCounty && selectedCounty !== "All" && selectedCounty !== "") {
-              url += `&county=${encodeURIComponent(selectedCounty)}`;
-            }
-            setLoading(true);
-            fetch(url)
-              .then((res) => {
-                if (!res.ok) throw new Error('No se pudo obtener eventos');
-                return res.json();
-              })
-              .then((data) => {
-                setEvents(data);
-                setLoading(false);
-              })
-              .catch((err) => {
-                setError(err.message);
-                setLoading(false);
-              });
+            fetchEvents();
           }}
         />
       )}
@@ -399,26 +394,7 @@ const EventsList: React.FC = () => {
           onSuccess={() => {
             setShowCreateModal(false);
             // Refrescar eventos tras crear
-            const apiBase = process.env.REACT_APP_API_URL || 'http://localhost:8080';
-            let url = `${apiBase}/api/EventsApi?eventType=Events`;
-            const selectedCounty = county === "auto" ? autoCounty : county;
-            if (selectedCounty && selectedCounty !== "All" && selectedCounty !== "") {
-              url += `&county=${encodeURIComponent(selectedCounty)}`;
-            }
-            setLoading(true);
-            fetch(url)
-              .then((res) => {
-                if (!res.ok) throw new Error('No se pudo obtener eventos');
-                return res.json();
-              })
-              .then((data) => {
-                setEvents(data);
-                setLoading(false);
-              })
-              .catch((err) => {
-                setError(err.message);
-                setLoading(false);
-              });
+            fetchEvents();
           }}
         />
       )}
