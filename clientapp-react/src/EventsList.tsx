@@ -156,19 +156,6 @@ const EventsList: React.FC = () => {
     }
   }, [county]);
 
-  // Mostrar eventos de 'All' apenas se monta el componente
-  useEffect(() => {
-    if (county === 'auto' && !autoCounty) {
-      // Mostrar All Norway mientras se detecta ubicación
-      setCounty('All');
-      // Luego, si se detecta county, se actualizará automáticamente
-    }
-    // Si el usuario selecciona manualmente, no hacemos nada
-    // Si county ya es distinto de 'auto', tampoco
-    // Esto solo se ejecuta una vez al montar
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   // Cuando se detecta un county válido por geolocalización, actualizar filtro
   useEffect(() => {
     if (county === 'auto' && autoCounty && autoCounty !== 'All') {
