@@ -156,6 +156,26 @@ const EventsList: React.FC = () => {
     }
   }, [county]);
 
+  // Mostrar eventos de 'All' apenas se monta el componente
+  useEffect(() => {
+    if (county === 'auto' && !autoCounty) {
+      // Mostrar All Norway mientras se detecta ubicación
+      setCounty('All');
+      // Luego, si se detecta county, se actualizará automáticamente
+    }
+    // Si el usuario selecciona manualmente, no hacemos nada
+    // Si county ya es distinto de 'auto', tampoco
+    // Esto solo se ejecuta una vez al montar
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Cuando se detecta un county válido por geolocalización, actualizar filtro
+  useEffect(() => {
+    if (county === 'auto' && autoCounty && autoCounty !== 'All') {
+      setCounty(autoCounty);
+    }
+  }, [autoCounty, county]);
+
   // Solo pedir eventos cuando hay county válido
   useEffect(() => {
     if (county !== "auto" || (county === "auto" && autoCounty)) {
@@ -225,16 +245,16 @@ const EventsList: React.FC = () => {
 
   return (
     <div className="max-w-4xl mx-auto pb-4 px-2">
-      {user && (
-        <div className="flex justify-end mb-0"> {/* Solo muestra el contenedor si hay usuario */}
+      <div className="flex justify-end">
+        {user && (
           <button
             className="bg-tangoBlue text-white px-3 py-1 rounded hover:bg-tangoGold transition text-sm"
             onClick={() => setShowCreateModal(true)}
           >
             + Create Event or Class
           </button>
-        </div>
-      )}
+        )}
+      </div>
       {/* Compact block for title and filters with reduced margin */}
       <div className="mt-2 mb-3">
         <h2 className="text-base font-semibold mb-1 text-center text-tangoBlue">
