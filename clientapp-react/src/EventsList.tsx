@@ -225,16 +225,16 @@ const EventsList: React.FC = () => {
 
   return (
     <div className="max-w-4xl mx-auto pb-4 px-2">
-      <div className="flex justify-end">
-        {user && (
+      {user && (
+        <div className="flex justify-end">
           <button
             className="bg-tangoBlue text-white px-3 py-1 rounded hover:bg-tangoGold transition text-sm"
             onClick={() => setShowCreateModal(true)}
           >
             + Create Event or Class
           </button>
-        )}
-      </div>
+        </div>
+      )}
       {/* Compact block for title and filters with reduced margin */}
       <div className="mt-2 mb-3">
         <h2 className="text-base font-semibold mb-1 text-center text-tangoBlue">
