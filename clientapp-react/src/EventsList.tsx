@@ -150,70 +150,14 @@ const EventsList: React.FC = () => {
   // Detectar ciudad para el título
   let cityLabel = 'Norway';
   if (county === 'auto') {
-    cityLabel = autoCounty && autoCounty !== 'All' ? autoCounty : 'Detecting location...';
+    cityLabel = autoCounty && autoCounty !== 'All' && autoCounty !== '' ? autoCounty : '';
   } else if (county && county !== 'All') {
     cityLabel = county;
   }
 
-  const handleDelete = async (eventId: number) => {
-    if (!token) return;
-    setEventIdToDelete(eventId);
-    setShowDeleteModal(true);
-  };
-
-  const confirmDelete = async () => {
-    if (!token || eventIdToDelete == null) return;
-    const apiBase = process.env.REACT_APP_API_URL || 'http://localhost:8080';
-    try {
-      const res = await fetch(`${apiBase}/api/EventsApi/${eventIdToDelete}`, {
-        method: 'DELETE',
-        headers: {
-          ...(token ? { Authorization: `Bearer ${token}` } : {})
-        }
-      });
-      if (res.status === 401) {
-        throw new Error('Unauthorized. Only the creator or an admin can delete this event or your session has expired.');
-      }
-      if (res.status === 403) {
-        throw new Error('You do not have permission to delete this event.');
-      }
-      if (!res.ok) throw new Error('Failed to delete event');
-      setSelectedEvent(null);
-      setShowDeleteModal(false);
-      setEventIdToDelete(null);
-      // Refrescar eventos tras eliminar
-      let url = `${apiBase}/api/EventsApi?eventType=Events`;
-      const selectedCounty = county === "auto" ? autoCounty : county;
-      if (selectedCounty && selectedCounty !== "All" && selectedCounty !== "") {
-        url += `&county=${encodeURIComponent(selectedCounty)}`;
-      }
-      setLoading(true);
-      fetch(url)
-        .then((res) => {
-          if (!res.ok) throw new Error('No se pudo obtener eventos');
-          return res.json();
-        })
-        .then((data) => {
-          setEvents(data);
-          setLoading(false);
-        })
-        .catch((err) => {
-          setError(err.message);
-          setLoading(false);
-        });
-    } catch (err: any) {
-      setError(err.message);
-      setShowDeleteModal(false);
-      setEventIdToDelete(null);
-    }
-  };
-
-  if (loading) return <div>Loading events...</div>;
-  if (error) return <div style={{ color: 'red' }}>Error: {error}</div>;
-
   return (
     <div className="max-w-4xl mx-auto pt-2 pb-4 px-2">
-      <div className="flex justify-end mb-0">{/* mb-0 para eliminar espacio */}
+      <div className="flex justify-end items-center min-h-0 h-8 mb-0" style={{marginBottom: 0, minHeight: 0, height: '2rem'}}>
         {user && (
           <button
             className="bg-tangoBlue text-white px-3 py-1 rounded hover:bg-tangoGold transition text-sm"
@@ -223,9 +167,9 @@ const EventsList: React.FC = () => {
           </button>
         )}
       </div>
-      <h2 className="text-base font-semibold mb-1 text-center text-tangoBlue">
+      <h2 className="text-base font-semibold mb-0 text-center text-tangoBlue" style={{marginTop: 0, marginBottom: 0}}>
         Tango Events in: {" "}
-        <span className="text-tangoGreen-dark">{cityLabel}</span>
+        <span className="text-tangoGreen-dark">{cityLabel || <span className="italic text-gray-400">Detecting location...</span>}</span>
       </h2>
       <div className="mb-2 flex flex-row gap-1 justify-center overflow-x-auto md:flex-row md:items-center md:gap-2">
         <div className="flex flex-col w-1/2 min-w-[90px] md:w-auto md:min-w-[120px]">
@@ -294,7 +238,8 @@ const EventsList: React.FC = () => {
                         className="bg-red-600 text-white px-3 py-1 rounded text-xs hover:bg-red-700 transition"
                         onClick={(e) => {
                           e.stopPropagation();
-                          handleDelete(event.id);
+                          setEventIdToDelete(event.id);
+                          setShowDeleteModal(true);
                         }}
                       >
                         Delete
@@ -342,7 +287,10 @@ const EventsList: React.FC = () => {
                 </button>
                 <button
                   className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
-                  onClick={() => handleDelete(selectedEvent.id)}
+                  onClick={() => {
+                    setEventIdToDelete(selectedEvent.id);
+                    setShowDeleteModal(true);
+                  }}
                 >
                   Delete
                 </button>
