@@ -119,12 +119,14 @@ const EventsList: React.FC = () => {
 
   useEffect(() => {
     const requestGeolocation = () => {
+      // Clear previous errors and state when starting
       setGeolocationError(null);
+      
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(async (pos) => {
           const c = await getCountyFromPosition(pos.coords.latitude, pos.coords.longitude);
           setAutoCounty(c);
-          setGeolocationError(null);
+          setGeolocationError(null); // Clear error on success
         }, (err) => {
           console.error("Geolocation error:", err);
           setGeolocationError("Could not automatically detect your location. Please select a county from the list.");
@@ -142,9 +144,11 @@ const EventsList: React.FC = () => {
         setError(null);
       }
     };
+
     if (county === "auto") {
       requestGeolocation();
     } else {
+      // If user selects a county, clear any auto-county info
       setAutoCounty("");
       setGeolocationError(null);
     }
@@ -224,7 +228,7 @@ const EventsList: React.FC = () => {
           </button>
         )}
       </div>
-      {/* Title and filters in a single compact block */}
+      {/* Compact block for title and filters with reduced margin */}
       <div className="mt-2 mb-3">
         <h2 className="text-base font-semibold mb-1 text-center text-tangoBlue">
           Tango Events in: {" "}
