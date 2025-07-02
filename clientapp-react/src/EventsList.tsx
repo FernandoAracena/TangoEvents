@@ -213,7 +213,7 @@ const EventsList: React.FC = () => {
 
   return (
     <div className="max-w-4xl mx-auto pt-2 pb-4 px-2">
-      <div className="flex justify-end mb-1">{/* mb-1 para menos espacio */}
+      <div className="flex justify-end mb-0">{/* mb-0 para eliminar espacio */}
         {user && (
           <button
             className="bg-tangoBlue text-white px-3 py-1 rounded hover:bg-tangoGold transition text-sm"
