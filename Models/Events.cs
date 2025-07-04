@@ -7,35 +7,19 @@ namespace TangoKultura.Models
     {
         [Key]
         public int Id { get; set; }
-        [Required]
-        public string EventName { get; set; }
-        [Required]
-        public string TypeEvent { get; set; }
-        public string Description { get; set; }
-        [Required]
-        public string Organizer { get; set; }
+        public string? EventName { get; set; }
+        public string? TypeEvent { get; set; }
+        public string? Description { get; set; }
+        public string? Organizer { get; set; }
         public string? CreatedBy { get; set; }
+        public string? Address { get; set; }
         [Required]
-        public string Address { get; set; }
-        [Required]
-        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd-MM-yyyy}")]
-        public string Date { get; set; }
-        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd-MM-yyyy}")]
+        public required string Date { get; set; }
         public string? EndsDate { get; set; }
-
-        [Required]
-        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:HH:mm}")]
-        public string Starts { get; set; }
-
-        [Required]
-        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:HH:mm}")]
-        public string Ends { get; set; }
-
-        [Required]
-        public string Price { get; set; }
-
-        [Required]
-        public string EventLink { get; set; }
+        public string? Starts { get; set; }
+        public string? Ends { get; set; }
+        public string? Price { get; set; }
+        public string? EventLink { get; set; }
         [Required]
         public required string City { get; set; }
     }

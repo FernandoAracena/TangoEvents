@@ -31,81 +31,72 @@ namespace TangoKultura.Controllers
                 eventType = "Events";
             }
 
-            IEnumerable<Event> objEventList = _context.Events
-                .ToList()
-                .Where(e =>
-                    !string.IsNullOrEmpty(e.Date) &&
-                    DateTime.TryParseExact(e.Date, "dd-MM-yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out var eventDate) &&
-                    eventDate >= DateTime.Today
-                );
+            IQueryable<Event> query = _context.Events;
 
-            var eventDtos = objEventList.Select(e => new EventDto {
-                Id = e.Id,
-                EventName = e.EventName,
-                TypeEvent = e.TypeEvent,
-                Description = e.Description,
-                Organizer = e.Organizer,
-                CreatedBy = e.CreatedBy,
-                Address = e.Address,
-                Date = e.Date,
-                EndsDate = e.EndsDate,
-                Starts = e.Starts,
-                Ends = e.Ends,
-                Price = e.Price,
-                EventLink = e.EventLink,
-                City = e.City,
-                County = NorwayCountyHelper.GetCountyForCity(e.City)
-            });
+            var events = query.ToList();
+
+            var filteredEvents = events.Where(e => DateTime.Parse(e.Date).Date >= DateTime.Today);
+
 
             if (!string.IsNullOrEmpty(county) && county != "All")
             {
-                eventDtos = eventDtos.Where(e => e.County.Equals(county, StringComparison.OrdinalIgnoreCase));
+                filteredEvents = filteredEvents.Where(e => NorwayCountyHelper.GetCountyForCity(e.City).Equals(county, StringComparison.OrdinalIgnoreCase));
             }
-
-            eventDtos = eventDtos
-                .OrderBy(e => DateTime.ParseExact(e.Date, "dd-MM-yyyy", CultureInfo.InvariantCulture))
-                .ThenBy(e => DateTime.Parse(e.Starts));
-
-            IEnumerable<Event> objUpcomingCoursesList = Enumerable.Empty<Event>();
-            IEnumerable<Event> objStartedCoursesList = Enumerable.Empty<Event>();
 
             if (!string.IsNullOrEmpty(subEventType))
             {
                 if (subEventType == "Class")
                 {
-                    objEventList = objEventList.Where(e => e.TypeEvent == "Class");
+                    filteredEvents = filteredEvents.Where(e => e.TypeEvent == "Class");
                 }
                 else if (subEventType == "Course")
                 {
-                    objUpcomingCoursesList = objEventList
-                        .Where(e => e.TypeEvent == "Course" &&
-                                    (DateTime.ParseExact(e.Date, "dd-MM-yyyy", CultureInfo.InvariantCulture) > DateTime.Today));
-
-                    objStartedCoursesList = objEventList
-                        .Where(e => e.TypeEvent == "Course" &&
-                                    (DateTime.ParseExact(e.Date, "dd-MM-yyyy", CultureInfo.InvariantCulture) <= DateTime.Today));
+                    if (upcomingCourses)
+                    {
+                        filteredEvents = filteredEvents.Where(e => e.TypeEvent == "Course" && DateTime.Parse(e.Date) > DateTime.Today);
+                    }
+                    else
+                    {
+                        filteredEvents = filteredEvents.Where(e => e.TypeEvent == "Course" && DateTime.Parse(e.Date) <= DateTime.Today);
+                    }
                 }
             }
             else if (!string.IsNullOrEmpty(eventType))
             {
                 if (eventType == "Classes")
                 {
-                    subEventType = "Class";
-                    objEventList = objEventList.Where(e => e.TypeEvent == "Class");
+                    filteredEvents = filteredEvents.Where(e => e.TypeEvent == "Class");
                 }
                 else if (eventType == "Events")
                 {
-                    objEventList = objEventList.Where(e => e.TypeEvent == "Milonga" || e.TypeEvent == "Concert" || e.TypeEvent == "Practice" || e.TypeEvent == "Class" || (e.TypeEvent == "Course" && DateTime.ParseExact(e.Date, "dd-MM-yyyy", CultureInfo.InvariantCulture) >= DateTime.Today)
-);
+                    filteredEvents = filteredEvents.Where(e => e.TypeEvent == "Milonga" || e.TypeEvent == "Concert" || e.TypeEvent == "Practice" || e.TypeEvent == "Class" || (e.TypeEvent == "Course" && DateTime.Parse(e.Date) >= DateTime.Today));
                 }
             }
 
-            if (subEventType == "Course")
-            {
-                objEventList = upcomingCourses ? objUpcomingCoursesList : objStartedCoursesList;
-            }
+            var eventDtos = filteredEvents
+                .OrderBy(e => DateTime.Parse(e.Date))
+                .ThenBy(e => e.Starts)
+                .Select(e => new EventDto
+                {
+                    Id = e.Id,
+                    EventName = e.EventName,
+                    TypeEvent = e.TypeEvent,
+                    Description = e.Description,
+                    Organizer = e.Organizer,
+                    CreatedBy = e.CreatedBy,
+                    Address = e.Address,
+                    Date = DateTime.Parse(e.Date).ToString("dd-MM-yyyy"),
+                    EndsDate = !string.IsNullOrEmpty(e.EndsDate) ? DateTime.Parse(e.EndsDate).ToString("dd-MM-yyyy") : null,
+                    Starts = e.Starts,
+                    Ends = e.Ends,
+                    Price = e.Price,
+                    EventLink = e.EventLink,
+                    City = e.City,
+                    County = NorwayCountyHelper.GetCountyForCity(e.City)
+                })
+                .ToList();
 
-            return Ok(eventDtos);
+            return Ok(new { events = eventDtos });
         }
 
         // POST: api/EventsApi
@@ -119,24 +110,22 @@ namespace TangoKultura.Controllers
             var eventsToAdd = new List<Event>();
             try
             {
-                if (eventData.ValueKind == JsonValueKind.Array)
+                // We are now expecting a single event object, not an array
+                if (eventData.ValueKind == JsonValueKind.Object)
                 {
-                    eventsToAdd = JsonSerializer.Deserialize<List<Event>>(eventData.GetRawText());
-                }
-                else if (eventData.ValueKind == JsonValueKind.Object)
-                {
-                    var singleEvent = JsonSerializer.Deserialize<Event>(eventData.GetRawText());
+                    var singleEvent = JsonSerializer.Deserialize<Event>(eventData.GetRawText(), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
                     if (singleEvent != null)
                         eventsToAdd.Add(singleEvent);
                 }
                 else
                 {
-                    return BadRequest("Invalid event data format.");
+                    return BadRequest("Invalid event data format. Expected a single event object.");
                 }
             }
-            catch
+            catch (JsonException ex)
             {
-                return BadRequest("Invalid event data format.");
+                // Log the exception for debugging
+                return BadRequest($"Invalid event data format: {ex.Message}");
             }
 
             if (eventsToAdd.Count == 0)

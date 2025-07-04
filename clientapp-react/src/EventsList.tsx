@@ -233,6 +233,10 @@ const EventsList: React.FC = () => {
 
   return (
     <div className="max-w-4xl mx-auto pb-4 px-2">
+      <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4 rounded" role="alert">
+        <p className="font-bold">Important Notice</p>
+        <p>Due to a critical technical issue, our database was reset on July 4th, 2025. All user accounts and events created before this date have been lost. We sincerely apologize for the inconvenience. Please sign up again and recreate your events. Thank you for your understanding.</p>
+      </div>
       <div className="flex justify-end">
         {user && (
           <button
