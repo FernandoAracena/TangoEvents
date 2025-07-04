@@ -264,10 +264,6 @@ const CreateEvent: React.FC<CreateEventProps> = ({ onSuccess }) => {
           <label htmlFor="address" className="block text-sm font-medium text-gray-700">Address</label>
           <input type="text" name="address" id="address" value={form.address} onChange={handleChange} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
         </div>
-        <div className="mb-4">
-          <label htmlFor="venue" className="block text-sm font-medium text-gray-700">Venue (Optional)</label>
-          <input type="text" name="venue" id="venue" value={form.venue} onChange={handleChange} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
-        </div>
         {form.typeEvent === 'Course' && (
           <CustomDatePicker
             name="endsDate"
