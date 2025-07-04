@@ -1,6 +1,4 @@
 import React from 'react';
-import ReactDatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
 import { isWeekend, parse, format } from 'date-fns';
 
 interface MultiDatePickerProps {
@@ -22,31 +20,17 @@ const MultiDatePicker: React.FC<MultiDatePickerProps> = ({ name, values, onChang
     }
     return null;
   }).filter((d): d is Date => !!d) : [];
+  const value = values.join(', ');
   return (
     <div>
       {label && <label className="font-semibold text-tangoBlue mb-1 block">{label}</label>}
-      <ReactDatePicker
-        selected={selected[0] || null}
-        onChange={(dates: any) => {
-          if (Array.isArray(dates)) {
-            onChange(dates.map((d: Date) => format(d, 'dd-MM-yyyy')));
-          } else if (dates) {
-            onChange([format(dates, 'dd-MM-yyyy')]);
-          } else {
-            onChange([]);
-          }
-        }}
+      <input
+        type="text"
         name={name}
-        required={required}
+        value={value}
+        onChange={e => onChange(e.target.value.split(', ').map(date => format(parse(date, 'dd-MM-yyyy', new Date()), 'dd-MM-yyyy')))}
         className="input"
-        dayClassName={date => isWeekend(date) ? 'bg-tangoGold-light text-tangoBlue' : ''}
-        dateFormat="dd-MM-yyyy"
-        placeholderText="Select dates (dd-MM-yyyy)"
-        selectsMultiple
-        inline={false}
-        highlightDates={selected}
-        value={values.join(', ')}
-        shouldCloseOnSelect={false}
+        required={required}
       />
     </div>
   );

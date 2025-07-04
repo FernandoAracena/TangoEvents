@@ -1,6 +1,4 @@
 import React from 'react';
-import ReactDatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
 import { isWeekend, parse, format } from 'date-fns';
 
 interface CustomDatePickerProps {
@@ -27,22 +25,14 @@ const CustomDatePicker: React.FC<CustomDatePickerProps> = ({ name, value, onChan
   return (
     <div>
       {label && <label className="font-semibold text-tangoBlue mb-1 block">{label}</label>}
-      <ReactDatePicker
-        selected={selected}
-        onChange={date => {
-          if (date) {
-            // Siempre devolver en formato dd-MM-yyyy
-            onChange(format(date, 'dd-MM-yyyy'));
-          } else {
-            onChange('');
-          }
-        }}
+      <input
+        type="text"
         name={name}
-        required={required}
+        value={value}
+        onChange={e => onChange(e.target.value)}
         className="input"
-        dayClassName={date => isWeekend(date) ? 'bg-tangoGold-light text-tangoBlue' : ''}
-        dateFormat="dd-MM-yyyy"
-        placeholderText="Select date (dd-MM-yyyy)"
+        required={required}
+        placeholder="Select date (dd-MM-yyyy)"
       />
     </div>
   );
