@@ -35,7 +35,7 @@ namespace TangoKultura.Controllers
 
             var events = query.ToList();
 
-            var filteredEvents = events.Where(e => DateTime.Parse(e.Date).Date >= DateTime.Today);
+            var filteredEvents = events.Where(e => DateTime.ParseExact(e.Date, "dd-MM-yyyy", CultureInfo.InvariantCulture).Date >= DateTime.Today);
 
 
             if (!string.IsNullOrEmpty(county) && county != "All")
@@ -53,11 +53,11 @@ namespace TangoKultura.Controllers
                 {
                     if (upcomingCourses)
                     {
-                        filteredEvents = filteredEvents.Where(e => e.TypeEvent == "Course" && DateTime.Parse(e.Date) > DateTime.Today);
+                        filteredEvents = filteredEvents.Where(e => e.TypeEvent == "Course" && DateTime.ParseExact(e.Date, "dd-MM-yyyy", CultureInfo.InvariantCulture) > DateTime.Today);
                     }
                     else
                     {
-                        filteredEvents = filteredEvents.Where(e => e.TypeEvent == "Course" && DateTime.Parse(e.Date) <= DateTime.Today);
+                        filteredEvents = filteredEvents.Where(e => e.TypeEvent == "Course" && DateTime.ParseExact(e.Date, "dd-MM-yyyy", CultureInfo.InvariantCulture) <= DateTime.Today);
                     }
                 }
             }
@@ -69,12 +69,12 @@ namespace TangoKultura.Controllers
                 }
                 else if (eventType == "Events")
                 {
-                    filteredEvents = filteredEvents.Where(e => e.TypeEvent == "Milonga" || e.TypeEvent == "Concert" || e.TypeEvent == "Practice" || e.TypeEvent == "Class" || (e.TypeEvent == "Course" && DateTime.Parse(e.Date) >= DateTime.Today));
+                    filteredEvents = filteredEvents.Where(e => e.TypeEvent == "Milonga" || e.TypeEvent == "Concert" || e.TypeEvent == "Practice" || e.TypeEvent == "Class" || (e.TypeEvent == "Course" && DateTime.ParseExact(e.Date, "dd-MM-yyyy", CultureInfo.InvariantCulture) >= DateTime.Today));
                 }
             }
 
             var eventDtos = filteredEvents
-                .OrderBy(e => DateTime.Parse(e.Date))
+                .OrderBy(e => DateTime.ParseExact(e.Date, "dd-MM-yyyy", CultureInfo.InvariantCulture))
                 .ThenBy(e => e.Starts)
                 .Select(e => new EventDto
                 {
@@ -85,8 +85,8 @@ namespace TangoKultura.Controllers
                     Organizer = e.Organizer,
                     CreatedBy = e.CreatedBy,
                     Address = e.Address,
-                    Date = DateTime.Parse(e.Date).ToString("dd-MM-yyyy"),
-                    EndsDate = !string.IsNullOrEmpty(e.EndsDate) ? DateTime.Parse(e.EndsDate).ToString("dd-MM-yyyy") : null,
+                    Date = e.Date, // Keep original format
+                    EndsDate = e.EndsDate, // Keep original format
                     Starts = e.Starts,
                     Ends = e.Ends,
                     Price = e.Price,
