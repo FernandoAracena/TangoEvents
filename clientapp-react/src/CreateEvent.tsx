@@ -12,7 +12,6 @@ const initialState = {
   description: '',
   organizer: '',
   address: '',
-  venue: '',
   date: '',
   endsDate: '',
   starts: '',
@@ -124,7 +123,6 @@ const CreateEvent: React.FC<CreateEventProps> = ({ onSuccess }) => {
     Description: e.description,
     Organizer: e.organizer,
     Address: e.address,
-    Venue: e.venue,
     Date: formatToDDMMYYYY(e.date),
     EndsDate: formatToDDMMYYYY(e.endsDate),
     Starts: e.starts,
@@ -147,8 +145,8 @@ const CreateEvent: React.FC<CreateEventProps> = ({ onSuccess }) => {
     setLoading(true);
     // Validar campos obligatorios
     for (const key of Object.keys(initialState)) {
-      if (!form[key as keyof typeof form] && key !== 'endsDate' && key !== 'venue') {
-        setError('All fields except Ends Date and Venue are required.');
+      if (!form[key as keyof typeof form] && key !== 'endsDate') {
+        setError('All fields except Ends Date are required.');
         setLoading(false);
         return;
       }
