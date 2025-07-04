@@ -108,7 +108,7 @@ const EventsList: React.FC = () => {
         return res.json();
       })
       .then((data) => {
-        setEvents(data);
+        setEvents(data.events); // Correctly access the 'events' array from the response
         setLoading(false);
       })
       .catch((err) => {
