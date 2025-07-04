@@ -1,28 +1,29 @@
 # Etapa 1: Build frontend
 FROM node:20 AS frontend-build
 WORKDIR /app/clientapp-react
-COPY clientapp-react/package.json clientapp-react/package-lock.json ./
+
+# Copia solo los archivos de manifiesto primero
+COPY clientapp-react/package.json ./
+
+# Instala dependencias
+ENV NODE_OPTIONS="--max-old-space-size=4096"
 RUN npm install
+
+# Copia el resto del código fuente
 COPY clientapp-react/ ./
+
+# Construye la aplicación
 RUN npm run build
 
 # Etapa 2: Build backend
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 WORKDIR /src
-COPY TangoKultura.csproj ./
-COPY TangoKultura.sln ./
-COPY appsettings.json ./
-COPY appsettings.Development.json ./
-COPY Controllers/ ./Controllers/
-COPY Data/ ./Data/
-COPY Helpers/ ./Helpers/
-COPY Migrations/ ./Migrations/
-COPY Models/ ./Models/
-COPY Properties/ ./Properties/
-COPY wwwroot/ ./wwwroot/
-COPY Program.cs ./
-RUN dotnet restore
-RUN dotnet publish -c Release -o /app/publish
+
+# Copiar todos los archivos del proyecto
+COPY . .
+
+# Publicar la aplicación directamente
+RUN dotnet publish "TangoKultura.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
 # Etapa 3: Runtime
 FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS final
