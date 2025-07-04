@@ -23,7 +23,11 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.Requ
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
 
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews().AddJsonOptions(options =>
+{
+    // options.JsonSerializerOptions.Converters.Add(new TangoKultura.Helpers.DateTimeConverter());
+});
+
 builder.Services.AddControllers(); // Habilitar controladores API
 
 // Configurar CORS para permitir peticiones desde React
