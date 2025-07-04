@@ -117,9 +117,15 @@ namespace TangoKultura.Controllers
                     if (singleEvent != null)
                         eventsToAdd.Add(singleEvent);
                 }
+                else if (eventData.ValueKind == JsonValueKind.Array)
+                {
+                    var eventArray = JsonSerializer.Deserialize<List<Event>>(eventData.GetRawText(), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                    if (eventArray != null)
+                        eventsToAdd.AddRange(eventArray);
+                }
                 else
                 {
-                    return BadRequest("Invalid event data format. Expected a single event object.");
+                    return BadRequest("Invalid event data format. Expected a single event object or an array of events.");
                 }
             }
             catch (JsonException ex)
