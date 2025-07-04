@@ -12,7 +12,6 @@ interface Event {
   organizer: string;
   createdBy: string;
   address: string;
-  venue: string;
   date: string;
   endsDate: string;
   starts: string;
@@ -360,7 +359,6 @@ const EventsList: React.FC = () => {
             <div className="text-tangoGreen-dark mb-2 break-words">{selectedEvent.description}</div>
             <div className="text-tangoGreen-dark text-sm mb-1 break-words">Organizer: {selectedEvent.organizer}</div>
             <div className="text-tangoGreen-dark text-sm mb-1 break-words">Address: {selectedEvent.address}</div>
-            <div className="text-tangoGreen-dark text-sm mb-1 break-words">Venue: {selectedEvent.venue}</div>
             <div className="text-tangoGold-dark text-sm mb-1 break-words">Price: {selectedEvent.price}</div>
             <div className="text-tangoGreen-dark text-sm mb-1 break-words">City: {selectedEvent.city} ({selectedEvent.county})</div>
             {selectedEvent.eventLink && (
